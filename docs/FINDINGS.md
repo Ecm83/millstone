@@ -1,4 +1,10 @@
-# Findings — millstone vs. Voynich (ZL3b-n, EVA)
+# Findings — millstone: hallazgos medidos sobre cinco corpus
+
+> Fichas por corpus en `docs/corpora/`. Voynich: `ZL3b-n.txt` (ZL) +
+> `IT2a-n.txt` (Takahashi). Indo: `indus.csv` (ICIT). Lineal A:
+> `linear_a.json` (GORILA/SigLA). Control: `culpeper.txt` (1653).
+
+## Voynich (ZL3b-n, EVA)
 
 Primera corrida de `discover` sobre el corpus real: 227 folios, 5.385 líneas,
 38.213 palabras, 193.300 símbolos, 27 símbolos EVA distintos.
@@ -277,3 +283,53 @@ Un texto alquímico real es lengua natural completa: funcionales
 dominantes, vocabulario abierto, casi sin triples, pocas familias. La
 firma Voynich es incomparable con prosa de su época — el corpus no es
 "texto sobre plantas en otro idioma", es otra clase de objeto.
+
+## Escritura del Indo — sello administrativo
+
+`ingest/indus.py` sobre el corpus ICIT/Mahadevan (4.449 inscripciones,
+672 signos, longitud media 3,9):
+
+- **Normalización de dirección**: el CSV guarda orden físico; los sellos
+  se leen R/L mayormente → `normalize_direction` invierte para obtener
+  el orden de lectura. Sin esto, el signo terminal aparece al principio.
+- **Marcadores posicionales**: signo 740 ("jar") es final el 66% de las
+  veces en orden de lectura — marcador terminal. Signo 700 inicial el
+  76% — marcador inicial.
+- **Núcleos con hapax 84%** — cada inscripción lleva una secuencia
+  central casi única (nombre/identificador).
+- Estructura: `marcador inicial + núcleo + marcador terminal` — el
+  patrón de un sello administrativo (heráldico/toponímico/de propiedad),
+  no de una lengua corrida.
+
+## Lineal A — contabilidad palacial
+
+`ingest/lineara.py` sobre el corpus Navarre-AI (GORILA+SigLA, 1.637 docs
+con texto, 3.767 palabras):
+
+- Inventario de soportes: **913 nódulos + 489 tablillas + 194 roundels**
+  ≈ 80% archivo administrativo.
+- **40% de tokens contienen números egeos** (U+101xx); 42% de "palabras"
+  son un solo signo → líneas de partida `commodity: cantidad`.
+- **hapax 89,7%** — cada "palabra" es casi única (nombres propios);
+  solo 24 secuencias multi-signo reaparecen en >1 doc.
+- `U+1076B` abre 1.284 palabras — ideograma de producto dominante.
+
+Firma: **listas contables con nombres** — la estructura de un archivo de
+palacio, no de textos sagrados. El mismo perfil formal que Lineal B
+(descifrado porque era griego contando ganado); aquí la lengua base es
+eteocretense, pero la forma del corpus es idéntica: burocracia de
+almacén.
+
+## Panel comparativo — millstone discrimina clases de corpus
+
+| Corpus | Firma | Clase |
+|---|---|---|
+| Voynich | plantilla intra-palabra + orden libre + léxico cerrado | inventario combinatorio |
+| Indo | marcadores posicionales + núcleos hapax | sello administrativo |
+| Lineal A | tokens numéricos + hapax extremo | contabilidad palacial |
+| Culpeper | funcionales + vocabulario abierto | lengua natural |
+| Sintético | gramática recuperada exacta | oráculo |
+
+El mismo motor, sin código específico por corpus, asigna cada corpus a
+su clase. Esa discriminación — no el descifrado del Voynich — es el
+producto de millstone.

@@ -1,70 +1,89 @@
 # Roadmap
 
 > Documentación por corpus en `docs/corpora/`: `voynich.md`, `indus.md`,
-> `culpeper.md`, `synthetic.md`, `lineara.md`
+> `lineara.md`, `culpeper.md`, `synthetic.md`
 
-millstone es un motor genérico de caracterización gramatical. El Voynich es el
-caso de estudio estrella, no el sistema. Prioridades de arriba abajo.
+millstone es un motor genérico de caracterización gramatical. El Voynich
+es el caso de estudio estrella, no el sistema. Estado: **completo** —
+pipeline entero verificado sobre cinco corpus, 75 tests.
 
-## Fase 0 — Fundaciones
+## Fase 0 — Fundaciones ✅
 
 - [x] Skeleton: `pyproject.toml`, layout `src/`, pytest
 - [x] Modelo de corpus genérico: jerarquía de niveles declarada por corpus.
       "Glifo/Folio/Línea" son instancias, no el esquema fijo.
 
-## Fase 1 — `ingest`: adaptadores de fuente → modelo
+## Fase 1 — `ingest`: adaptadores de fuente → modelo ✅
 
-Formato canónico interno (dataclasses puras) + adaptadores:
+- [x] `synthetic.py` — genera corpus desde una gramática regular con
+      oráculo `accepts()` — el instrumento de calibración
+- [x] `plaintext.py` — texto tokenizado genérico (en/es recupera `q→u`)
+- [x] `ivtff.py` — Voynich: ZL (ZL3b-n.txt) + Takahashi (IT2a-n.txt),
+      cabeceras, loci, `$Q/$P/$L/$H`, incertidumbre
+- [x] `render.py` — re-codificación glifo→grafema (control de sesgo EVA)
+- [x] `indus.py` — corpus ICIT/Mahadevan, normalización de dirección R/L
+- [x] `lineara.py` — corpus Navarre-AI (GORILA+SigLA), codepoints Unicode
 
-- [x] `synthetic.py` — genera corpus desde una gramática regular/CFG conocida.
-      Clave para validación. Prioridad alta dentro de la fase.
-- [x] `plaintext.py` — texto tokenizado genérico (lenguas conocidas).
-- [x] `ivtff.py` — transcripción Voynich.
-- [x] Transcripción: **Zandbergen-Landini** `ZL3b-n.txt` (EVA, IVTFF 2.0,
-      voynich.nu). Takahashi queda como segunda fuente para comparar lecturas.
-- [x] Test de humo Voynich: ~38k tokens, counts por folio contra literatura.
+## Fase 2 — `engine` genérico ✅
 
-## Fase 2 — `engine` genérico
+- [x] `CorpusView` + implementación RAM; Neo4j intercambiable
+- [x] DSL de restricciones (8 tipos): FollowedBy, StartsWith, EndsWith,
+      ForbidsBigram, SymbolAt, OnlyInPosition, NextInSet, PrevInSet
+- [x] Negativos por restricción: frontera válido/inválido como dato
+- [x] `discover`: inducción de restricciones con frontera de Pareto
+      (caso-exactas vs casi-reglas con su cuenta de violaciones)
+- [x] `mdl.prune`: base mínima sin reglas entrañadas
+- [x] `frontier`: geometría de la frontera por atributo (mano/quire/sección)
+- [x] `induce`: gramáticas inducidas (secuencial + posicional) y tamaño
+      del lenguaje por DP — sobre-generación medida
+- [x] `glyphs`: `GlyphView`/`to_glyphs` — nivel glifo (bancos EVA atómicos)
+- [x] Batería de calibración: sintético recupera la gramática exacta;
+      lenguas reales recuperan restricciones fonotácticas
 
-- [x] `CorpusView`: interfaz abstracta (iterar unidades, filtrar por nivel,
-      n-gramas, contextos) + implementación en RAM.
-- [x] DSL de restricciones: reglas como datos, no código. La regla `q → o`
-      inicial se *expresa* en el DSL, no vive hardcodeada.
-- [ ] Generación de negativos por restricción: frontera válido/inválido como
-      dato consultable.
-- [x] MDL: longitud de descripción de gramática + coste de codificar el corpus.
-      Evita la trampa de "gramática que acepta todo".
-- [ ] **Batería de calibración** (prioridad alta):
-      - corpus sintético con gramática conocida → el motor la recupera
-      - lengua real → recupera restricciones conocidas (p.ej. `ŋ` nunca
-        inicia palabra en inglés)
+## Fase 3 — Hipótesis y aplicación ✅
 
-## Fase 3 — Aplicación al Voynich
+`hypotheses/` — cada teoría es un objeto con predicciones y evidencia
+enlazada. Evaluadas sobre el corpus real:
 
-- [x] Ingest IVTFF + restricciones Voynich en el DSL. Ver `docs/FINDINGS.md`:
-      `q→o` es casi-regla (~2% violaciones), `h` solo tras ligaduras EVA,
-      `c` solo dentro de ligaduras, `b`/`h` nunca iniciales.
-- [ ] Analizar la frontera de `q→o`: ¿las ~124 excepciones se concentran en
-      folios/mano/sección concretos?
-- [x] `hypotheses`: framework Evidence/Hypothesis + CurrierAB evaluada
-      (gramáticas A/B difieren; frontera q→o es compartida — ver FINDINGS).
-- [ ] Más hipótesis: generador tipo Timm, idioma natural, cifrado.
-- [ ] Opción de excluir `?` (lecturas inciertas) del alfabeto en análisis.
+- [x] `currier-ab` — gramáticas A/B distintas; `q→o` compartido
+- [x] `qo-frontier` — REFUTA ruido de escriba; regla suave distribuida
+- [x] `timm-slots` — 99,8% held-out con 364 bigramas
+- [x] `initial-effect` — gallows medido (`p` ×11,6 en párrafo)
+- [x] `closed-lexicon` — vocab seleccionado, no generado libre
+- [x] `free-word-order` — orden libre entre palabras (0,93)
+- [x] `natural-language` — mixto: Zipf sí, funcionales no
+- [x] `uncertain-space` — `,` mayormente cortes reales
+- [x] `transcription-robust` — la frontera está en el manuscrito
+      (108/124 loci coinciden ZL vs Takahashi)
+- [x] `line-clustering` — agrupación intra-línea débil (2,5×)
+- [x] `flow-across-lines` — REFUTADO: celdas independientes
+- [x] `paradigmatic-families` — vocabulario de variantes (73,7%)
+- [x] `productive-grammar` — REFUTADO: no genera formas nuevas
 
-## Fase 4 — `store` + `cli`
+## Fase 4 — `store` + `cli` ✅
 
-- [x] Neo4j: verificado en vivo — 237.765 nodos + aristas CONTAINS,
-      Neo4jCorpusView produce resultados idénticos a RAM (126 violaciones
-      q→o), Constraint→Word enlazado por locus. `docker compose up -d`.
-- [x] CLI: `millstone <corpus> stats|discover|check|frontier|hypothesize`
-      (`python -m millstone` o `pip install -e .`).
+- [x] Neo4j en vivo: 237k nodos, `Constraint→Word`, `Hypothesis→Evidence`
+      navegable en localhost:7474
+- [x] CLI: `stats` `discover` `check` `frontier` `hypothesize` `report`
+
+## Fase 5 — Multicorpus (la fase que resultó ser el punto)
+
+El motor se probó agnóstico: cada corpus cae en su clase sin código
+específico — Voynich=inventario, Indo=sello, Lineal A=contabilidad,
+Culpeper=lengua natural, sintético=oráculo. **Esa discriminación es el
+producto**, no un paso más hacia el Voynich.
+
+## Pendiente
+
+- [ ] Excluir `?` (lecturas inciertas) del alfabeto en análisis
+- [ ] `TranscriptionComparison` formal con more granularidad de locus
+- [ ] FSA/slot grammar exportado a Neo4j como grafo navegable
+- [ ] Testbed de candidatos de descifrado (mapeo glifo→fonema + check)
 
 ## Lógica del orden
 
 - `ingest` primero: sin corpus no hay nada que caracterizar.
-- `synthetic` y la calibración son prioritarias: son lo único que dice si el
-  motor detecta gramática real o solo ruido. El Voynich no puede validar nada
-  por sí solo.
-- `engine` antes que `store`: el motor es el valor del proyecto y debe funcionar
-  en RAM; Neo4j solo añadiría fricción.
+- `synthetic` y la calibración son prioritarias: son lo único que dice si
+  el motor detecta gramática real o solo ruido.
+- `engine` antes que `store`: el motor es el valor; Neo4j solo persiste.
 - El DSL convierte la lógica específica de lengua de "código" a "datos".

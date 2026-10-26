@@ -46,12 +46,15 @@ el contrato:
 ```
 millstone/
 ├── model.py     modelo de corpus genérico (schema de niveles + nodos)
-├── ingest/      adaptadores de fuente → modelo: IVTFF (Voynich),
-│                plaintext, sintético. Sin dependencias de grafo
+├── ingest/      adaptadores de fuente → modelo: ivtff (Voynich),
+│                plaintext, synthetic, render (re-codificación),
+│                indus (ICIT), lineara (GORILA). Sin dependencias de grafo
 ├── store/       modelo → Neo4j (almacén + exploración visual; NO razona)
-├── engine/      motor: unificación, restricciones, negativos, MDL
+├── engine/      motor: view, constraints (8 tipos), check, discover
+│                (Pareto), mdl, frontier, induce, glyphs (nivel glifo)
 │                opera sobre CorpusView (interfaz abstracta; Neo4j o RAM)
-├── hypotheses/  hipótesis como objetos: predicciones, refutaciones, geometrías
+├── hypotheses/  12 hipótesis evaluadas: predicciones, refutaciones,
+│                geometrías de frontera — todas con evidencia enlazada
 └── cli/         punto de entrada que conecta todo
 ```
 
@@ -61,4 +64,18 @@ intercambiable.
 
 ## Estado
 
-Esqueleto inicial. Ver `docs/ROADMAP.md` para el plan de prioridades.
+Funcional end-to-end y calibrado sobre **cinco corpus** (ver
+`docs/corpora/` y `docs/FINDINGS.md` para los hallazgos medidos):
+
+| Corpus | Firma detectada | Veredicto |
+|---|---|---|
+| **Voynich** (ZL + Takahashi) | plantilla intra-palabra + orden libre + léxico cerrado | inventario combinatorio |
+| **Indo** (ICIT/Mahadevan) | marcadores posicionales (jar final 66%) + núcleos 84% hapax | sello administrativo |
+| **Lineal A** (GORILA/SigLA) | 40% tokens numéricos + 90% hapax | contabilidad palacial |
+| **Culpeper 1653** | funcionales dominantes, vocabulario abierto | lengua natural ✓ |
+| **Sintético** | gramática recuperada exacta | oráculo ✓ |
+
+CLI: `python -m millstone <corpus> stats|discover|check|frontier|
+hypothesize|report`. `report` regenera los veredictos en markdown.
+Neo4j opcional: `docker compose up -d` → grafo navegable con
+`Constraint→Word` e `Hypothesis→Evidence`.
