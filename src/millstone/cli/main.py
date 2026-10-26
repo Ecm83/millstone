@@ -93,6 +93,8 @@ def main(argv=None) -> int:
     f.add_argument("attr", help="atributo de folio (H mano, Q quire, L lengua)")
     h = sub.add_parser("hypothesize")
     h.add_argument("name", nargs="?", choices=sorted(HYPOTHESES))
+    r = sub.add_parser("report", help="corre todas las hipótesis y vuelca markdown")
+    r.add_argument("--out", help="fichero de salida (stdout por defecto)")
 
     args = p.parse_args(argv)
     corpus = load(args.corpus, args.format)
@@ -141,6 +143,25 @@ def main(argv=None) -> int:
             for e in h.evaluate(corpus):
                 mark = {True: "SOPORTA", False: "REFUTA", None: "?"}[e.supported]
                 print(f"  [{mark:>7}] {e.prediction}\n            {e.detail}")
+        return 0
+
+    if args.cmd == "report":
+        lines = ["# Reporte millstone\n"]
+        for name in sorted(HYPOTHESES):
+            h = HYPOTHESES[name]()
+            lines.append(f"## `{h.name}`\n\n> {h.statement}\n")
+            for e in h.evaluate(corpus):
+                mark = {True: "SOPORTA", False: "REFUTA", None: "—"}[e.supported]
+                lines.append(f"- **{mark}** {e.prediction}  \n  {e.detail}")
+            lines.append("")
+        text = "\n".join(lines)
+        if args.out:
+            from pathlib import Path
+
+            Path(args.out).write_text(text, encoding="utf-8")
+            print(f"escrito {args.out}")
+        else:
+            print(text)
         return 0
 
     return 1
