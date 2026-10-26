@@ -180,3 +180,36 @@ no de una lengua con sintaxis.
 distancia de Hamming 1 vs 24,2% del vocabulario barajado por posición
 (3,1×). El vocabulario no son palabras atómicas: son **variantes
 mínimas de plantillas** (`daiin`/`daiiin`/`aiin`, `chol`/`chor`...).
+
+## Control de artefacto de codificación (sesgo EVA)
+
+`ingest/render.py` + experimento: una gramática sintética con glifos
+atómicos `C`/`S` renderizada como dígrafos `ch`/`sh` hace que el engine
+"descubra" `FollowedBy(c→h)`, `PrevInSet(h,{c,s})` y una riada de
+bigramas prohibidos — **todos artefactos puros de la codificación**, la
+gramática real no los contenía.
+
+Implicación honesta: la clase de hallazgos "ligaduras EVA" del Voynich
+(`h` solo tras `{c,s,t,k,p,f}`, `c→{h,t,k,p,f}`) vive en el nivel
+**ortográfico** — mide cómo EVA escribe glifos del manuscrito con varias
+letras, no la gramática. El resto de hallazgos (q→o, orden libre, léxico
+cerrado, gallows, familias) no es explicable por la codificación.
+
+## ¿Catálogo sin sintaxis? — agrupación intra-línea
+
+`hypotheses/clustering.py`: la masa de palabras repetidas dentro de su
+línea es **7,2% vs 2,9% del barajado global (2,5×)** — existe agrupación
+débil a nivel de línea. El orden libre no es total: hay estructura
+temática o catalográfica residual. Compatible con tablas/listas
+(astrológicas, alquímicas, enciclopédicas) donde las líneas agrupan
+conceptos relacionados sin sintaxis de frase.
+
+## Síntesis revisada
+
+La lectura "lengua natural con sintaxis" queda descartada por el orden
+libre + ausencia de funcionales. La lectura que mejor encaja **toda** la
+evidencia — plantilla intra-palabra rígida, léxico cerrado seleccionado,
+orden libre, agrupación por línea, dos registros Currier — es un
+**inventario estructurado** (catálogo/tabla generativa), o un proceso
+productivo de escritura artificial. El motor caracteriza la estructura;
+la intencionalidad es una pregunta que la estructura sola no decide.

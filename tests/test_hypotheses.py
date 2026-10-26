@@ -167,6 +167,15 @@ def test_paradigmatic_families_on_voynich():
 
 
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_line_clustering_on_voynich():
+    # medido: 7.2% vs 2.9% barajado -> agrupacion debil pero real
+    from millstone.hypotheses.clustering import LineClustering
+
+    evidence = LineClustering().evaluate(parse_file(DATA))
+    assert evidence[0].supported is True
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_closed_lexicon_on_voynich():
     from millstone.hypotheses.lexicon import ClosedLexicon
 
