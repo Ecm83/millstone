@@ -113,6 +113,20 @@ def test_induced_grammar_accepts_training_data():
     assert not g.accepts("qan")
 
 
+TT = Path("data/raw/IT2a-n.txt")
+
+
+@pytest.mark.skipif(
+    not (DATA.exists() and TT.exists()), reason="corpus ZL/TT no descargado"
+)
+def test_transcription_robust_qo():
+    from millstone.hypotheses.transcription import TranscriptionRobust
+
+    evidence = TranscriptionRobust().evaluate(parse_file(DATA), parse_file(TT))
+    # ~90% de solape esperado: las excepciones estan en el manuscrito
+    assert evidence[0].supported is True
+
+
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_closed_lexicon_on_voynich():
     from millstone.hypotheses.lexicon import ClosedLexicon

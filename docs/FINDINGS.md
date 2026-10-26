@@ -119,3 +119,18 @@ más abierto.
 También: el muestreo ponderado del FSA solo reproduce palabras
 atestiguadas (2/5000 inéditas) — la masa de probabilidad está
 concentradísima en el vocabulario real.
+
+## Validación cruzada de transcripciones (ZL vs Takahashi)
+
+`IT2a-n.txt` = lectura independiente de Takahashi (37.044 palabras,
+23 símbolos) vs ZL (38.213, 27 símbolos):
+
+- **La frontera de `q→o` es del manuscrito**: tasas casi idénticas
+  (0,33% vs 0,36%) y **108 de ~124 líneas violadoras coinciden** — ambos
+  transcritores leyeron los mismos glifos (`qkeeody`, `qpol`, `qkeey`).
+  Las discrepancias restantes (`qkar`/`qkos`) son lecturas divergentes en
+  el mismo locus — también información.
+- 78 reglas exactas comunes; 34 solo-ZL, 10 solo-TT — ZL distingue más
+  (lee más símbolos raros).
+- Conclusión metodológica: las restricciones descubiertas no son
+  artefacto de la transcripción. El instrumento mide el manuscrito.
