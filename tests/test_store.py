@@ -1,7 +1,14 @@
 """Tests de store sin Neo4j: filas generadas + driver falso que graba."""
 
 from millstone.model import Corpus, CorpusSchema, Node
-from millstone.store.graph import edge_rows, node_rows, record_constraint, write
+from millstone.store.graph import (
+    edge_rows,
+    node_rows,
+    record_constraint,
+    record_hypothesis,
+    write,
+)
+from millstone.hypotheses.core import Evidence
 from millstone.engine.check import CheckResult, Violation
 from millstone.engine.constraints import FollowedBy
 
@@ -78,3 +85,15 @@ def test_record_constraint_links_violations():
     queries = [q for q, _ in drv.session_obj.calls]
     assert any("Constraint" in q for q in queries)
     assert any("VIOLATED_AT" in q and "Word" in q for q in queries)
+
+
+def test_record_hypothesis_links_evidence():
+    drv = FakeDriver()
+    record_hypothesis(
+        drv, "test-h", "afirmación",
+        [Evidence("pred1", True, "det"), Evidence("pred2", False, "det2")],
+    )
+    queries = [q for q, _ in drv.session_obj.calls]
+    assert any("Hypothesis" in q for q in queries)
+    assert any("SUPPORTS" in q for q in queries)
+    assert any("REFUTES" in q for q in queries)

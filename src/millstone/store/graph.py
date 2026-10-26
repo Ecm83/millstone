@@ -106,3 +106,30 @@ def record_constraint(driver, result: CheckResult) -> None:
             dsl=repr(result.constraint),
             loci=[v.locus for v in result.violations if v.locus],
         )
+
+
+def record_hypothesis(driver, name: str, statement: str, evidence) -> None:
+    """(:Hypothesis) -[:SUPPORTS|:REFUTES|:NEUTRAL]-> (:Evidence).
+
+    El grafo registra el estado de cada teoría con su detalle —
+    el mapa de hipótesis del README hecho navegable.
+    """
+    rel = {True: "SUPPORTS", False: "REFUTES", None: "NOTES"}
+    with driver.session() as s:
+        s.run(
+            "MERGE (h:Hypothesis {name: $name}) SET h.statement = $st",
+            name=name,
+            st=statement,
+        )
+        for e in evidence:
+            s.run(
+                "MERGE (ev:Evidence {prediction: $pred, hypothesis: $name}) "
+                "SET ev.detail = $det, ev.supported = $sup "
+                "WITH ev "
+                "MATCH (h:Hypothesis {name: $name}) "
+                f"MERGE (h)-[:{rel[e.supported]}]->(ev)",
+                pred=e.prediction,
+                det=e.detail,
+                sup=e.supported,
+                name=name,
+            )
