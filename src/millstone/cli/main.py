@@ -36,6 +36,7 @@ from millstone.hypotheses.natural import NaturalLanguage
 from millstone.hypotheses.wordorder import FreeWordOrder
 from millstone.hypotheses.families import ParadigmaticFamilies
 from millstone.hypotheses.clustering import LineClustering
+from millstone.hypotheses.flow import FlowAcrossLines
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
@@ -49,6 +50,7 @@ HYPOTHESES = {
     "free-word-order": FreeWordOrder,
     "paradigmatic-families": ParadigmaticFamilies,
     "line-clustering": LineClustering,
+    "flow-across-lines": FlowAcrossLines,
 }
 
 

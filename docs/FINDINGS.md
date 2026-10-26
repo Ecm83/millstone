@@ -220,3 +220,19 @@ orden libre, agrupación por línea, dos registros Currier — es un
 **inventario estructurado** (catálogo/tabla generativa), o un proceso
 productivo de escritura artificial. El motor caracteriza la estructura;
 la intencionalidad es una pregunta que la estructura sola no decide.
+
+## El límite formal: ¿flujo de texto o cuadrícula?
+
+`hypotheses/flow.py`: los pares (fin de línea → inicio de siguiente) son
+bigramas atestiguados solo **5,7% vs 4,9% del nulo** (1,2×) — REFUTADO el
+flujo continuo. Cada línea es una celda independiente: la serialización
+del manuscrito confirma la lectura de matriz/tabla, no de prosa.
+
+Sobre la simetría glosolalia-vs-catálogo: bajo MDL y restricciones
+topológicas son indistinguibles **porque su firma formal es idéntica por
+construcción** — ambas son estructura sin dependencias semánticas
+observables. La única ruptura posible de esa simetría requiere un ancla
+externa: una correspondencia con contenido conocido (un crib, un item de
+la tabla identificado). El formalismo llega hasta "hay un sistema";
+"hay un mensaje" está fuera de su alcance — y millstone lo dice como
+resultado, no como fracaso.

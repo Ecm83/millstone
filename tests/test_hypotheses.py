@@ -198,6 +198,15 @@ def test_glyph_level_discovery_on_voynich():
 
 
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_flow_across_lines_refuted():
+    # medido: 5.7% vs 4.9% nulo -> las lineas son celdas independientes
+    from millstone.hypotheses.flow import FlowAcrossLines
+
+    evidence = FlowAcrossLines().evaluate(parse_file(DATA))
+    assert evidence[0].supported is False
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_closed_lexicon_on_voynich():
     from millstone.hypotheses.lexicon import ClosedLexicon
 
