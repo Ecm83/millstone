@@ -43,15 +43,17 @@ Formato canónico interno (dataclasses puras) + adaptadores:
       `c` solo dentro de ligaduras, `b`/`h` nunca iniciales.
 - [ ] Analizar la frontera de `q→o`: ¿las ~124 excepciones se concentran en
       folios/mano/sección concretos?
-- [ ] `hypotheses`: Currier A/B, generador tipo Timm, idioma natural, cifrado
-      como instancias del framework genérico con predicciones/refutaciones.
+- [x] `hypotheses`: framework Evidence/Hypothesis + CurrierAB evaluada
+      (gramáticas A/B difieren; frontera q→o es compartida — ver FINDINGS).
+- [ ] Más hipótesis: generador tipo Timm, idioma natural, cifrado.
+- [ ] Opción de excluir `?` (lecturas inciertas) del alfabeto en análisis.
 
 ## Fase 4 — `store` + `cli`
 
 - [ ] Neo4j: persistencia del grafo físico + nodos de restricción/hipótesis con
       evidencia enlazada. Docker compose. Opcional e intercambiable.
-- [ ] CLI: `millstone ingest`, `millstone stats`, `millstone check <rule>`,
-      `millstone negatives`.
+- [x] CLI: `millstone <corpus> stats|discover|check|frontier|hypothesize`
+      (`python -m millstone` o `pip install -e .`).
 
 ## Lógica del orden
 

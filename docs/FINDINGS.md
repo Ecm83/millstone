@@ -49,3 +49,33 @@ ground truth.
   lenguaje y comparar fronteras de reglas
 - Las ~124 excepciones de `q→o`: ¿se concentran en folios/sección/manos
   concretos? (evidencia para/against scribe-error vs regla real)
+
+---
+
+## Currier A/B — primera hipótesis evaluada
+
+Partición por `$L` de folio: A=11.073 palabras, B=23.837.
+
+- **[SOPORTA] las gramáticas difieren**: 125 restricciones exactas solo en A,
+  57 solo en B. La etiqueta Currier corresponde a estructura real.
+- **[SOPORTA parcial] B es más restrictiva al final de palabra**: el
+  `EndsWith` de A tolera ~21 símbolos; el de B es menor.
+- **[REFUTA] la frontera de `q→o` difiere entre A y B**: A=0,26% vs B=0,39%
+  de palabras violando — la regla se comporta igual en ambos. Indica
+  convención ortográfica compartida, no rasgo gramatical de cada "lengua".
+- Caveat metodológico: gran parte del diff son `ForbidsBigram` con `?`
+  (lecturas inciertas) — el símbolo `?` contamina; valorar excluirlo de
+  `alphabet` en análisis serios.
+
+## Frontera de q→o — refutada la hipótesis "ruido de escriba"
+
+`engine/frontier.py` agrupa las ~124 violaciones por atributo de folio:
+
+- **Por mano**: distribuidas (top: mano 2 con 36,5% de violaciones sobre
+  28,8% de palabras — levemente por encima, no concentración)
+- **Por quire**: distribuidas (top: quire T, 33,3% sobre 28,5%)
+- **Por lenguaje**: B acumula 73% sobre 62% de masa — coherente con el
+  tamaño de B, no sesgo
+
+Conclusión: las excepciones de `q→o` son una **propiedad distribuida del
+sistema**, no errores localizados. La regla es suave de verdad.

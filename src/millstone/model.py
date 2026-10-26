@@ -12,7 +12,7 @@ Sin dependencias de grafo ni de ninguna capa superior: dataclasses puras.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Iterator
+from typing import Callable, Iterator
 
 
 @dataclass(frozen=True)
@@ -128,3 +128,27 @@ class Corpus:
 
         walk(self.root, self.schema.root_level)
         return errors
+
+
+def subcorpus(
+    corpus: Corpus, level: str, keep: Callable[[Node], bool]
+) -> Corpus:
+    """Subcorpus con solo los nodos de `level` que cumplen `keep`.
+
+    Conserva la cadena de ancestros (los contenedores sin descendientes
+    mantenidos se podan) y comparte los subárboles intactos.
+    """
+    def rec(node: Node) -> Node | None:
+        if node.level == level:
+            return node if keep(node) else None
+        children = [c for c in (rec(ch) for ch in node.children) if c]
+        if not children and node.level != corpus.schema.root_level:
+            return None
+        return Node(
+            level=node.level, children=children,
+            locus=node.locus, attrs=dict(node.attrs),
+        )
+
+    return Corpus(
+        schema=corpus.schema, root=rec(corpus.root), meta=dict(corpus.meta)
+    )
