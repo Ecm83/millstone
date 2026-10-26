@@ -249,3 +249,31 @@ biológica). Si el corpus fuera un proceso combinatorio frío, esa
 repetición no debería existir. Es el único punto donde la matriz "se
 rompe" — posible cita literal, parche de copia, o entrada de catálogo con
 identidad propia.
+
+## Letras triples: sustitución monoalfabética refutada
+
+649+ palabras contienen símbolo triplicado (`eee`=433, `iii`=183:
+`daiiin`, `seees`, `qoteeey`...). Ninguna lengua europea tiene triples a
+esa frecuencia (~1,7% de tokens); los que existen (alemán, ruso, yurok)
+son compuestos marginales. **No es sustitución letra-a-letra** de lengua
+europea — los triples son marcas (numerales/abreviaturas/inventario).
+
+## Control externo: Culpeper's Complete Herbal (1653)
+
+La batería completa contra un herbario médico-astrológico real de la
+época del manuscrito:
+
+| métrica | Voynich | Culpeper |
+|---|---|---|
+| tipos / tokens | 8.424 / 38.213 | 10.052 / 250.482 |
+| TTR | 0,220 | 0,040 |
+| hapax | 71,0% | 42,8% |
+| len media | 5,1 | 4,5 |
+| top-10 | 12,1% | **28,5%** |
+| familias 1-ed | **73,7%** | 35,8% |
+| tipos con triples | **341** | 8 |
+
+Un texto alquímico real es lengua natural completa: funcionales
+dominantes, vocabulario abierto, casi sin triples, pocas familias. La
+firma Voynich es incomparable con prosa de su época — el corpus no es
+"texto sobre plantas en otro idioma", es otra clase de objeto.
