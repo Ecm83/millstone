@@ -79,3 +79,21 @@ Partición por `$L` de folio: A=11.073 palabras, B=23.837.
 
 Conclusión: las excepciones de `q→o` son una **propiedad distribuida del
 sistema**, no errores localizados. La regla es suave de verdad.
+
+## Timm (generador de slots) — soportado con contundencia
+
+Modelo: bigramas carácter-carácter inducidos sobre train, evaluados sobre
+palabras held-out (`hypotheses/timm.py`).
+
+- **Voynich**: 99,8% de 7.643 palabras held-out aceptadas con solo 364
+  bigramas. Vocabulario casi cerrado: la plantilla predice lo que no ha visto.
+- **Barajado (Mill: diferencia)**: mismo alfabeto y longitudes, combinatoria
+  destruida → 51,6%. Error real ×240 menor → la estructura es combinatoria,
+  no artefacto del alfabeto.
+- **Control en lengua natural** (docs del repo, ~1.2k palabras
+  español/inglés): 91,6% vs 53,4% barajado — error solo ×6 menor. El
+  Voynich es cualitativamente más cerrado que texto natural.
+
+Consistente con la tesis de Timm & Schinner: la palabra Voynich se comporta
+como salida de un proceso combinatorio de plantillas, no como vocabulario
+de lengua abierta.

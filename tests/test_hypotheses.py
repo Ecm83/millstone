@@ -63,3 +63,25 @@ def test_qo_frontier_is_distributed():
     evidence = QoFrontier().evaluate(parse_file(DATA))
     by_hand = next(e for e in evidence if "mano" in e.prediction)
     assert by_hand.supported is False
+
+
+def test_timm_on_slot_generated_corpus():
+    # la gramática sintética ES de slots: cobertura held-out ~total
+    from millstone.engine.view import MemoryCorpusView
+    from millstone.hypotheses.timm import TimmSlots
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar
+
+    corpus = generate(q_o_grammar(), n_words=1000, seed=11)
+    evidence = TimmSlots().evaluate(corpus)
+    coverage = next(e for e in evidence if "held-out" in e.prediction)
+    assert coverage.supported is True
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_timm_on_voynich():
+    from millstone.hypotheses.timm import TimmSlots
+
+    evidence = TimmSlots().evaluate(parse_file(DATA))
+    mill = next(e for e in evidence if "barajado" in e.prediction)
+    assert mill.supported is True  # estructura combinatoria real, no ruido

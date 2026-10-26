@@ -28,9 +28,14 @@ from millstone.engine.mdl import prune
 from millstone.engine.view import MemoryCorpusView
 from millstone.hypotheses.currier import CurrierAB
 from millstone.hypotheses.qo import QoFrontier
+from millstone.hypotheses.timm import TimmSlots
 from millstone.ingest import ivtff, plaintext
 
-HYPOTHESES = {"currier-ab": CurrierAB, "qo-frontier": QoFrontier}
+HYPOTHESES = {
+    "currier-ab": CurrierAB,
+    "qo-frontier": QoFrontier,
+    "timm-slots": TimmSlots,
+}
 
 
 def load(path: str, fmt: str):
