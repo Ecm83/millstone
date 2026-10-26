@@ -1,35 +1,53 @@
 # millstone
 
-Motor determinista de análisis lingüístico sobre el Manuscrito Voynich.
+Motor determinista de caracterización gramatical sobre corpus cerrados.
 
-No es un LLM ni un analizador estadístico. Es una **IA simbólica** que caracteriza
-la topología gramatical del corpus: grafo de conocimiento jerárquico + motor de
-restricciones + validación por generación de negativos (métodos de Mill /
-identificación de Gold / MDL).
+No es un LLM ni un analizador estadístico. Es una **IA simbólica** agnóstica de
+lengua que caracteriza la topología gramatical de un corpus: grafo de
+conocimiento jerárquico + motor de restricciones + validación por generación de
+negativos (métodos de Mill / identificación de Gold / MDL).
+
+Caso de estudio estrella: el **Manuscrito Voynich** — el corpus cerrado más
+famoso que nadie ha descifrado. Pero el motor no sabe nada del Voynich:
+funciona igual sobre latín, fonemas del inglés o una gramática sintética.
 
 ## La idea
 
-El Voynich es un corpus cerrado (~38k tokens) sin ground truth. No se puede
-"aprender"; se puede *caracterizar*. millstone trata la gramática como un objeto
-matemático:
+Un corpus cerrado sin ground truth no se puede "aprender"; se puede
+*caracterizar*. millstone trata la gramática como un objeto matemático:
 
-- **Grafo jerárquico**: Glifo → Slot → Palabra → Línea → Párrafo → Folio → Sección
-- **Restricciones**: reglas deterministas (posición de `q`, slots de sufijo,
-  restricciones entre niveles) registradas como nodos con su evidencia enlazada
-- **Negativos**: cada restricción define qué cadenas son inválidas → la frontera
-  válido/inválido es el objeto de estudio
-- **Hipótesis**: nodos de teoría (Currier A/B, generador tipo Timm, idioma
-  natural, cifrado) con predicciones y refutaciones registradas en el grafo
+- **Grafo jerárquico**: niveles declarados por corpus, p.ej.
+  Símbolo → Palabra → Línea → Párrafo → Folio → Sección
+- **Restricciones**: reglas deterministas expresadas en un DSL genérico
+  (posicionales, de slots, entre niveles), registradas como nodos con su
+  evidencia enlazada
+- **Negativos**: cada restricción define qué cadenas son inválidas → la
+  frontera válido/inválido es el objeto de estudio
+- **Hipótesis**: nodos de teoría con predicciones y refutaciones registradas
+  en el grafo
 - **Criterio**: MDL — la gramática correcta es la que comprime mejor el corpus
+
+## Calibración
+
+El Voynich no tiene ground truth, así que no puede validar el motor. Por eso
+millstone se calibra primero sobre corpus **con** gramática conocida:
+
+- corpus sintéticos generados desde una gramática regular/CFG dada → el motor
+  debe recuperarla
+- lenguas reales → el motor debe recuperar restricciones fonotácticas conocidas
+
+Solo un instrumento calibrado se aplica después al Voynich.
 
 ## Arquitectura
 
-Capas desacopladas. Ninguna capa conoce la implementación de la de abajo, solo el
-contrato:
+Capas desacopladas. Ninguna capa conoce la implementación de la de abajo, solo
+el contrato:
 
 ```
 millstone/
-├── ingest/      IVTFF → modelo de corpus (dataclasses, sin dependencias de grafo)
+├── model.py     modelo de corpus genérico (schema de niveles + nodos)
+├── ingest/      adaptadores de fuente → modelo: IVTFF (Voynich),
+│                plaintext, sintético. Sin dependencias de grafo
 ├── store/       modelo → Neo4j (almacén + exploración visual; NO razona)
 ├── engine/      motor: unificación, restricciones, negativos, MDL
 │                opera sobre CorpusView (interfaz abstracta; Neo4j o RAM)
@@ -43,10 +61,4 @@ intercambiable.
 
 ## Estado
 
-Esqueleto inicial. Próximos pasos:
-
-- [ ] Elegir transcripción (Takahashi / Zandbergen-Landini, formato IVTFF)
-- [ ] `ingest`: parser IVTFF → modelo de corpus
-- [ ] `store`: persistencia Neo4j del grafo físico
-- [ ] `engine`: primera restricción de validación (`q` → `o` en posición inicial)
-- [ ] `hypotheses`: registro de teorías con evidencia
+Esqueleto inicial. Ver `docs/ROADMAP.md` para el plan de prioridades.
