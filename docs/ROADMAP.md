@@ -1,5 +1,8 @@
 # Roadmap
 
+> Documentación por corpus en `docs/corpora/`: `voynich.md`, `indus.md`,
+> `culpeper.md`, `synthetic.md`, `lineara.md`
+
 millstone es un motor genérico de caracterización gramatical. El Voynich es el
 caso de estudio estrella, no el sistema. Prioridades de arriba abajo.
 
