@@ -50,8 +50,9 @@ Formato canónico interno (dataclasses puras) + adaptadores:
 
 ## Fase 4 — `store` + `cli`
 
-- [ ] Neo4j: persistencia del grafo físico + nodos de restricción/hipótesis con
-      evidencia enlazada. Docker compose. Opcional e intercambiable.
+- [~] Neo4j: `store/graph.py` (volcado por niveles + Constraint→Word por
+      locus) y `store/view.py` (Neo4jCorpusView) implementados y testeados
+      contra driver falso. Pendiente: prueba en vivo (`docker compose up`).
 - [x] CLI: `millstone <corpus> stats|discover|check|frontier|hypothesize`
       (`python -m millstone` o `pip install -e .`).
 
