@@ -128,6 +128,15 @@ def test_transcription_robust_qo():
 
 
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_uncertain_space_on_voynich():
+    # medido: `,` se distribuye como corte de palabra (TV 0.385 < 0.676)
+    from millstone.hypotheses.spaces import UncertainSpace
+
+    evidence = UncertainSpace().evaluate(parse_file(DATA))
+    assert evidence[0].supported is True
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_closed_lexicon_on_voynich():
     from millstone.hypotheses.lexicon import ClosedLexicon
 

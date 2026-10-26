@@ -134,3 +134,18 @@ concentradísima en el vocabulario real.
   (lee más símbolos raros).
 - Conclusión metodológica: las restricciones descubiertas no son
   artefacto de la transcripción. El instrumento mide el manuscrito.
+
+## Espacios inciertos `,` — son cortes, con una minoría continuadora
+
+2.743 espacios inciertos. Distancia de variación total del primer símbolo
+del par que cruza la frontera:
+
+- TV(`,`, `.`) = **0,385** vs TV(`,`, interno) = **0,676** → se distribuyen
+  como cortes de palabra reales
+- Pero `l`(27%), `r`(21%), `o`(16%) están elevados vs `.` → ~1/5 parecen
+  continuaciones (p.ej. `ol`, `ra`, `lk` que también son finales válidos)
+- Pares top: `ra`(286), `lk`(147), `lc`(145), `ls`(125), `sa`(124)
+
+Lectura: el escriba marcaba `,` cuando el espacio era ambiguo, y en su
+mayoría el corte es real — pero existe una subpoblación de palabras
+partidas (o compuestas) que merece análisis aparte.

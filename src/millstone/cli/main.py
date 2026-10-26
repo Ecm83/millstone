@@ -31,6 +31,7 @@ from millstone.hypotheses.qo import QoFrontier
 from millstone.hypotheses.timm import TimmSlots
 from millstone.hypotheses.initial import InitialEffect
 from millstone.hypotheses.lexicon import ClosedLexicon
+from millstone.hypotheses.spaces import UncertainSpace
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
@@ -39,6 +40,7 @@ HYPOTHESES = {
     "timm-slots": TimmSlots,
     "initial-effect": InitialEffect,
     "closed-lexicon": ClosedLexicon,
+    "uncertain-space": UncertainSpace,
 }
 
 
