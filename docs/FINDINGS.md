@@ -236,3 +236,16 @@ externa: una correspondencia con contenido conocido (un crib, un item de
 la tabla identificado). El formalismo llega hasta "hay un sistema";
 "hay un mensaje" está fuera de su alcance — y millstone lo dice como
 resultado, no como fracaso.
+
+## La anomalía buscada: repeticiones de cadenas largas
+
+Búsqueda de n-gramas de palabras repetidos en líneas distintas
+(candidatos a "rotura de la regla estadística"): n=2→2389, n=3→155,
+**n=4→exactamente uno**, n≥5→cero.
+
+La única colisión verbatim de longitud 4 en todo el manuscrito:
+`ol shedy qokedy qokeedy` en **f75v.47 y f84r.22** (ambas sección
+biológica). Si el corpus fuera un proceso combinatorio frío, esa
+repetición no debería existir. Es el único punto donde la matriz "se
+rompe" — posible cita literal, parche de copia, o entrada de catálogo con
+identidad propia.
