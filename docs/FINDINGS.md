@@ -173,3 +173,10 @@ Síntesis de las hipótesis: gramática rígida **dentro** de palabra
 (Timm), orden libre **entre** palabras, léxico cerrado seleccionado, dos
 sublenguajes Currier — el retrato de un sistema de inventario/código,
 no de una lengua con sintaxis.
+
+## Familias paradigmáticas — vocabulario de variantes de plantilla
+
+`hypotheses/families.py`: 73,7% de los 8.424 tipos tienen un vecino a
+distancia de Hamming 1 vs 24,2% del vocabulario barajado por posición
+(3,1×). El vocabulario no son palabras atómicas: son **variantes
+mínimas de plantillas** (`daiin`/`daiiin`/`aiin`, `chol`/`chor`...).

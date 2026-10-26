@@ -158,6 +158,15 @@ def test_free_word_order_on_voynich():
 
 
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_paradigmatic_families_on_voynich():
+    # medido: 73.7% vs 24.2% barajado
+    from millstone.hypotheses.families import ParadigmaticFamilies
+
+    evidence = ParadigmaticFamilies().evaluate(parse_file(DATA))
+    assert evidence[0].supported is True
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_closed_lexicon_on_voynich():
     from millstone.hypotheses.lexicon import ClosedLexicon
 
