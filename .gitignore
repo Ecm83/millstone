@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Env / secrets
+.env
+.env.*
+
+# Data (corpus se descarga aparte)
+data/*.ivtt
+data/raw/
+
+# IDE
+.idea/
+.vscode/
