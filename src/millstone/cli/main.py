@@ -33,6 +33,7 @@ from millstone.hypotheses.initial import InitialEffect
 from millstone.hypotheses.lexicon import ClosedLexicon
 from millstone.hypotheses.spaces import UncertainSpace
 from millstone.hypotheses.natural import NaturalLanguage
+from millstone.hypotheses.wordorder import FreeWordOrder
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
@@ -43,6 +44,7 @@ HYPOTHESES = {
     "closed-lexicon": ClosedLexicon,
     "uncertain-space": UncertainSpace,
     "natural-language": NaturalLanguage,
+    "free-word-order": FreeWordOrder,
 }
 
 

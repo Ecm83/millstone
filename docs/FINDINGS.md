@@ -161,3 +161,15 @@ partidas (o compuestas) que merece análisis aparte.
 La lectura: superficie Zipfiana sin gramática de función — compatible con
 un léxico real pero rígidamente templado por dentro (Timm), o con un
 código donde cada "palabra" es una entrada de inventario.
+
+## Orden de palabras libre — consistencia con codebook
+
+Mill por barajado intra-línea (mismo vocabulario y frecuencias, orden
+destruido): out-degree de los 50 tipos más frecuentes real/barajado =
+**0,93** — indistinguible del azar. `daiin` (800 ocurrencias) admite 405
+sucesores distintos.
+
+Síntesis de las hipótesis: gramática rígida **dentro** de palabra
+(Timm), orden libre **entre** palabras, léxico cerrado seleccionado, dos
+sublenguajes Currier — el retrato de un sistema de inventario/código,
+no de una lengua con sintaxis.
