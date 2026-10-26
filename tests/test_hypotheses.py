@@ -137,6 +137,18 @@ def test_uncertain_space_on_voynich():
 
 
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_natural_language_on_voynich():
+    from millstone.hypotheses.natural import NaturalLanguage
+
+    evidence = NaturalLanguage().evaluate(parse_file(DATA))
+    by_pred = {e.prediction: e for e in evidence}
+    zipf = next(e for e in evidence if "Zipfiana" in e.prediction)
+    funct = next(e for e in evidence if "funcionales" in e.prediction)
+    assert zipf.supported is True   # cola natural
+    assert funct.supported is False  # sin funcionales dominantes
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_closed_lexicon_on_voynich():
     from millstone.hypotheses.lexicon import ClosedLexicon
 

@@ -149,3 +149,15 @@ del par que cruza la frontera:
 Lectura: el escriba marcaba `,` cuando el espacio era ambiguo, y en su
 mayoría el corte es real — pero existe una subpoblación de palabras
 partidas (o compuestas) que merece análisis aparte.
+
+## Idioma natural — evidencia mixta
+
+- **[SOPORTA] cola Zipfiana**: 71% hapax (5.979/8.424 tipos) — la
+  distribución léxica parece de lengua
+- **[REFUTA] funcionales dominantes**: top-10 cubre solo 12,1% de tokens
+  (lengua real ~15-25%+) — no hay equivalentes a "de/el/la/the"
+- **[SOPORTA] longitudes variadas**: 38,8% fuera de media±1,5 (μ=5,06)
+
+La lectura: superficie Zipfiana sin gramática de función — compatible con
+un léxico real pero rígidamente templado por dentro (Timm), o con un
+código donde cada "palabra" es una entrada de inventario.

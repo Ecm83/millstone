@@ -32,6 +32,7 @@ from millstone.hypotheses.timm import TimmSlots
 from millstone.hypotheses.initial import InitialEffect
 from millstone.hypotheses.lexicon import ClosedLexicon
 from millstone.hypotheses.spaces import UncertainSpace
+from millstone.hypotheses.natural import NaturalLanguage
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
@@ -41,6 +42,7 @@ HYPOTHESES = {
     "initial-effect": InitialEffect,
     "closed-lexicon": ClosedLexicon,
     "uncertain-space": UncertainSpace,
+    "natural-language": NaturalLanguage,
 }
 
 
