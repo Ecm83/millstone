@@ -60,6 +60,9 @@ def write(driver, corpus: Corpus, batch: int = 5000) -> int:
     """Vuelca el árbol a Neo4j. Devuelve nº de nodos escritos."""
     rows = list(node_rows(corpus.root))
     with driver.session() as s:
+        # etiqueta común :Node + índice: hace O(1) los MERGE/MATCH por id
+        s.run("CREATE INDEX IF NOT EXISTS FOR (n:Node) ON (n.id)")
+        s.run("CREATE INDEX IF NOT EXISTS FOR (w:Word) ON (w.locus)")
         # metadatos del schema
         s.run(
             "MERGE (c:CorpusMeta {id: $id}) SET c.levels = $levels",
@@ -69,7 +72,7 @@ def write(driver, corpus: Corpus, batch: int = 5000) -> int:
         for level in corpus.schema.levels:
             level_rows = [r for r in rows if r["level"] == level]
             query = (
-                f"UNWIND $rows AS r MERGE (n:{_label(level)} {{id: r.id}}) "
+                f"UNWIND $rows AS r MERGE (n:Node:{_label(level)} {{id: r.id}}) "
                 "SET n.level=r.level, n.locus=r.locus, n.value=r.value, "
                 "n.idx=r.idx, n += r.props"
             )
@@ -78,7 +81,7 @@ def write(driver, corpus: Corpus, batch: int = 5000) -> int:
         edges = list(edge_rows(corpus.root))
         for i in range(0, len(edges), batch):
             s.run(
-                "UNWIND $edges AS e MATCH (p {id: e[0]}), (c {id: e[1]}) "
+                "UNWIND $edges AS e MATCH (p:Node {id: e[0]}), (c:Node {id: e[1]}) "
                 "MERGE (p)-[:CONTAINS]->(c)",
                 edges=edges[i : i + batch],
             )

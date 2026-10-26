@@ -130,6 +130,11 @@ class Corpus:
         return errors
 
 
+def surface(node: Node) -> str:
+    """Forma de superficie: concatenación de valores de las hojas."""
+    return "".join(l.value for l in node.leaves() if l.value is not None)
+
+
 def subcorpus(
     corpus: Corpus, level: str, keep: Callable[[Node], bool]
 ) -> Corpus:

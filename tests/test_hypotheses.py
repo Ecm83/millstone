@@ -79,6 +79,17 @@ def test_timm_on_slot_generated_corpus():
 
 
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_initial_effect_on_voynich():
+    # efecto gallows medido: 'p' debe estar muy sobrerrepresentada
+    from millstone.hypotheses.initial import InitialEffect
+
+    evidence = InitialEffect().evaluate(parse_file(DATA))
+    para = next(e for e in evidence if "paragraph" in e.prediction)
+    assert para.supported is True
+    assert "'p'" in para.detail
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_timm_on_voynich():
     from millstone.hypotheses.timm import TimmSlots
 

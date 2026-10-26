@@ -29,12 +29,14 @@ from millstone.engine.view import MemoryCorpusView
 from millstone.hypotheses.currier import CurrierAB
 from millstone.hypotheses.qo import QoFrontier
 from millstone.hypotheses.timm import TimmSlots
+from millstone.hypotheses.initial import InitialEffect
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
     "currier-ab": CurrierAB,
     "qo-frontier": QoFrontier,
     "timm-slots": TimmSlots,
+    "initial-effect": InitialEffect,
 }
 
 

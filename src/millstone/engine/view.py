@@ -46,3 +46,21 @@ class MemoryCorpusView:
                     leaf.value for leaf in node.leaves() if leaf.value is not None
                 ),
             )
+
+    def unit_sequences(
+        self, group_level: str, unit_level: str
+    ) -> Iterator[Sequence]:
+        """Secuencias cuyos "símbolos" son formas de un nivel superior.
+
+        p.ej. unit_sequences("line", "word") → por línea, la tupla de sus
+        palabras como strings — permite descubrir reglas palabra→palabra.
+        """
+        from millstone.model import surface
+
+        for group in self.corpus.nodes(group_level):
+            yield Sequence(
+                locus=group.locus,
+                symbols=tuple(
+                    surface(u) for u in group.iter_level(unit_level)
+                ),
+            )

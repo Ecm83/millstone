@@ -19,6 +19,7 @@ número de folio.
 from __future__ import annotations
 
 import re
+from collections import Counter
 from pathlib import Path
 
 from millstone.model import Corpus, CorpusSchema, Node
@@ -151,20 +152,24 @@ def parse_file(path: str | Path) -> Corpus:
     folios: dict[str, Node] = {}
     folio_order: list[str] = []
     # element_id -> paragraph node en construcción (por folio)
-    cur: dict[str, tuple[str, Node, str | None]] = {}
+    cur: dict[str, tuple[str, Node]] = {}
+    seen: dict[str, Counter] = {}
     folio_vars: dict[str, dict[str, str]] = {}
 
     def current_paragraph(folio: Node, element: str, locus_type: str) -> Node:
         prev = cur.get(folio.locus or "")
         if prev and prev[0] == element:
             return prev[1]
+        counts = seen.setdefault(folio.locus or "", Counter())
+        counts[element] += 1
+        suffix = "" if counts[element] == 1 else f"~{counts[element]}"
         par = Node(
             level="paragraph",
-            locus=f"{folio.locus}.{element.lower() if prev is None else element.lower() + '~'}",
+            locus=f"{folio.locus}.{element.lower()}{suffix}",
             attrs={"element": element, "locus_type": locus_type},
         )
         folio.children.append(par)
-        cur[folio.locus or ""] = (element, par, None)
+        cur[folio.locus or ""] = (element, par)
         return par
 
     for raw in Path(path).read_text(encoding="utf-8").splitlines():

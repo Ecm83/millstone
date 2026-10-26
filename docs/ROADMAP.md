@@ -50,9 +50,9 @@ Formato canónico interno (dataclasses puras) + adaptadores:
 
 ## Fase 4 — `store` + `cli`
 
-- [~] Neo4j: `store/graph.py` (volcado por niveles + Constraint→Word por
-      locus) y `store/view.py` (Neo4jCorpusView) implementados y testeados
-      contra driver falso. Pendiente: prueba en vivo (`docker compose up`).
+- [x] Neo4j: verificado en vivo — 237.765 nodos + aristas CONTAINS,
+      Neo4jCorpusView produce resultados idénticos a RAM (126 violaciones
+      q→o), Constraint→Word enlazado por locus. `docker compose up -d`.
 - [x] CLI: `millstone <corpus> stats|discover|check|frontier|hypothesize`
       (`python -m millstone` o `pip install -e .`).
 
