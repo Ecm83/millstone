@@ -195,6 +195,13 @@ Implicación honesta: la clase de hallazgos "ligaduras EVA" del Voynich
 letras, no la gramática. El resto de hallazgos (q→o, orden libre, léxico
 cerrado, gallows, familias) no es explicable por la codificación.
 
+Resolución implementada: `engine/glyphs.py` (`GlyphView` + `to_glyphs`)
+resegmenta a nivel glifo — los bancos `ch|sh|cth|ckh|cph|cfh` pasan a ser
+símbolos atómicos vía maximal-munch. A ese nivel el artefacto desaparece
+y queda la gramática real: `q→o` mantiene sus 126 violaciones, y los
+bancos muestran sus propias reglas (`cph`→`{o,e,ch,d,y,k,a,h}` exacta,
+`ckh`/`cfh` casi-exactas).
+
 ## ¿Catálogo sin sintaxis? — agrupación intra-línea
 
 `hypotheses/clustering.py`: la masa de palabras repetidas dentro de su

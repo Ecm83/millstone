@@ -25,7 +25,6 @@ from millstone.engine.constraints import (
     StartsWith,
     SymbolAt,
 )
-from millstone.engine.check import alphabet
 from millstone.engine.discover import Discovery
 from millstone.engine.view import CorpusView
 
@@ -158,7 +157,10 @@ def prune(view: CorpusView, level: str, discoveries: list[Discovery]) -> MDLResu
     Una candidata entrañada por la base se descarta.
     """
     discoveries = [d for d in discoveries if d.violations == 0]
-    alpha = alphabet(view)
+    # alfabeto del nivel analizado (coherente con GlyphView etc.)
+    alpha = frozenset(
+        s for seq in view.sequences(level) for s in seq.symbols
+    )
     coverage = [
         sum(
             1

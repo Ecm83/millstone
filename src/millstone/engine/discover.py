@@ -17,7 +17,6 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import Iterator
 
-from millstone.engine.check import alphabet
 from millstone.engine.constraints import (
     Constraint,
     EndsWith,
@@ -58,7 +57,8 @@ def discover(
     view: CorpusView, level: str, min_support: int = 5
 ) -> list[Discovery]:
     seqs = list(view.sequences(level))
-    alpha = alphabet(view)
+    # alfabeto del NIVEL analizado (puede ser glifo transformado, no hoja)
+    alpha = frozenset(s for seq in seqs for s in seq.symbols)
     n = len(seqs)
     out: list[Discovery] = []
     if not seqs or not alpha:

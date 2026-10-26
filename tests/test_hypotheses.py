@@ -175,6 +175,28 @@ def test_line_clustering_on_voynich():
     assert evidence[0].supported is True
 
 
+def test_glyph_view_merges_benches():
+    from millstone.engine.glyphs import to_glyphs
+
+    assert to_glyphs(tuple("cth")) == ("cth",)
+    assert to_glyphs(tuple("shol")) == ("sh", "o", "l")
+    assert to_glyphs(tuple("cphar")) == ("cph", "a", "r")
+    assert to_glyphs(tuple("daiin")) == tuple("daiin")
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_glyph_level_discovery_on_voynich():
+    from millstone.engine.glyphs import GlyphView
+    from millstone.engine.view import MemoryCorpusView
+
+    v = GlyphView(MemoryCorpusView(parse_file(DATA)))
+    found = {str(d.constraint) for d in
+             __import__("millstone.engine.discover", fromlist=["discover"]).discover(
+                 v, "word", min_support=50)}
+    # a nivel glifo ya no hay regla "h tras c" — eran artefacto de letra
+    assert not any("PrevInSet(symbol='h'" in f for f in found)
+
+
 @pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
 def test_closed_lexicon_on_voynich():
     from millstone.hypotheses.lexicon import ClosedLexicon
