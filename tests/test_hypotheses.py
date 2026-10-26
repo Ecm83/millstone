@@ -96,3 +96,26 @@ def test_timm_on_voynich():
     evidence = TimmSlots().evaluate(parse_file(DATA))
     mill = next(e for e in evidence if "barajado" in e.prediction)
     assert mill.supported is True  # estructura combinatoria real, no ruido
+
+
+def test_induced_grammar_accepts_training_data():
+    # la gramática inducida del corpus sintético acepta sus palabras
+    from millstone.engine.induce import induce
+    from millstone.engine.view import MemoryCorpusView
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar, word_strings
+
+    corpus = generate(q_o_grammar(), n_words=300, seed=5)
+    v = MemoryCorpusView(corpus)
+    g = induce(v, "word")
+    assert all(g.accepts(w) for w in word_strings(corpus))
+    # y rechaza lo que la gramática fuente rechaza
+    assert not g.accepts("qan")
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_closed_lexicon_on_voynich():
+    from millstone.hypotheses.lexicon import ClosedLexicon
+
+    evidence = ClosedLexicon().evaluate(parse_file(DATA))
+    assert all(e.supported for e in evidence)

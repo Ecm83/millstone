@@ -30,6 +30,7 @@ from millstone.hypotheses.currier import CurrierAB
 from millstone.hypotheses.qo import QoFrontier
 from millstone.hypotheses.timm import TimmSlots
 from millstone.hypotheses.initial import InitialEffect
+from millstone.hypotheses.lexicon import ClosedLexicon
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
@@ -37,6 +38,7 @@ HYPOTHESES = {
     "qo-frontier": QoFrontier,
     "timm-slots": TimmSlots,
     "initial-effect": InitialEffect,
+    "closed-lexicon": ClosedLexicon,
 }
 
 

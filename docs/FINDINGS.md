@@ -97,3 +97,25 @@ palabras held-out (`hypotheses/timm.py`).
 Consistente con la tesis de Timm & Schinner: la palabra Voynich se comporta
 como salida de un proceso combinatorio de plantillas, no como vocabulario
 de lengua abierta.
+
+## Léxico cerrado — el vocabulario es un inventario seleccionado
+
+`engine/induce.py` induce el FSA del corpus (estados = símbolo previo, o
+(posición, símbolo) para el modelo de slots). `language_size` cuenta por DP
+las palabras que la gramática acepta:
+
+- FSA bigramario: acepta **4,7×10¹⁶** palabras (≤14 chars) vs 8.424 tipos
+  observados → sobre-genera 6×10¹²×
+- FSA posicional (slots): acepta **2,1×10¹²** → 10.000× más restrictivo,
+  pero sigue 2×10⁸× por encima del vocabulario
+
+Lectura: la estructura de palabra es real y posicional (los slots existen),
+pero el vocabulario no es un muestreo libre del lenguaje de la plantilla —
+es un **conjunto finito seleccionado** (~28 bits de selección por tipo).
+Favorece lecturas tipo código/inventario fijo por encima de "generador
+estocástico puro": un generador libre produciría más hapax y vocabulario
+más abierto.
+
+También: el muestreo ponderado del FSA solo reproduce palabras
+atestiguadas (2/5000 inéditas) — la masa de probabilidad está
+concentradísima en el vocabulario real.
