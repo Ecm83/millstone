@@ -92,7 +92,9 @@ enlazada. Evaluadas sobre el corpus real:
 - [x] Testbed de candidatos de descifrado: `--map` (ingest/remap,
       maximal-munch unidad→fonema, fusión y borrado) re-codifica el
       corpus para cualquier comando; `testbed` compara firma y base de
-      reglas original vs descifrada
+      reglas original vs descifrada, con nulo `--nulls N` (relabelings
+      del mismo mapa): Bax 2014 queda fuera del nulo en eco/familias/
+      outdeg — la asignación particular importa, no la cobertura
 
 ## Fase 5 — Multicorpus (la fase que resultó ser el punto)
 

@@ -134,16 +134,22 @@ def main(argv=None) -> int:
     h.add_argument("name", nargs="?", choices=sorted(HYPOTHESES))
     r = sub.add_parser("report", help="corre todas las hipótesis y vuelca markdown")
     r.add_argument("--out", help="fichero de salida (stdout por defecto)")
-    sub.add_parser("testbed", help="evalúa un candidato de descifrado (--map)")
+    tb = sub.add_parser("testbed", help="evalúa un candidato de descifrado (--map)")
+    tb.add_argument(
+        "--nulls", type=int, default=0, metavar="N",
+        help="N relabelings aleatorios del mismo mapa: nulo para la firma",
+    )
 
     args = p.parse_args(argv)
     original = load(args.corpus, args.format)
     corpus = original
     remapped = None
+    mapping = None
     if args.mapfile:
         from millstone.ingest import remap
 
-        remapped = remap.apply_map(corpus, remap.parse_map(args.mapfile))
+        mapping = remap.parse_map(args.mapfile)
+        remapped = remap.apply_map(corpus, mapping)
         corpus = remapped.corpus
     view = MemoryCorpusView(corpus)
 
@@ -227,6 +233,8 @@ def main(argv=None) -> int:
         )
 
         group = corpus.schema.parent_level("word") or "word"
+        METRICS = ("hapax", "heaps_beta", "timm", "families", "outdeg",
+                   "echo_z3")
 
         def word_lines(c):
             v = MemoryCorpusView(c)
@@ -235,12 +243,14 @@ def main(argv=None) -> int:
                 if s.symbols
             ]
 
+        sigs = {}
         for label, c in (("original", original), ("descifrado", corpus)):
             v = MemoryCorpusView(c)
             ws = [w for l in word_lines(c) for w in l]
             ds = discover(v, "word")
             basis = prune(v, "word", ds)
             vec = run_battery(word_lines(c))
+            sigs[label] = vec
             print(
                 f"-- {label}: alfabeto {len(alphabet(v))} | "
                 f"{len(ws)} palabras ({len(set(ws))} tipos) | "
@@ -250,10 +260,36 @@ def main(argv=None) -> int:
                 print("   batería: N insuficiente")
             else:
                 print("   " + "  ".join(
-                    f"{k}={vec[k]:.3g}"
-                    for k in ("hapax", "heaps_beta", "timm", "families",
-                              "outdeg", "echo_z3")
+                    f"{k}={vec[k]:.3g}" for k in METRICS
                 ))
+
+        if args.nulls and sigs["descifrado"]:
+            import random
+
+            rng = random.Random(0)
+            keys, vals = list(mapping), list(mapping.values())
+            nulls: dict[str, list[float]] = {k: [] for k in METRICS}
+            for _ in range(args.nulls):
+                pm = dict(zip(keys, rng.sample(vals, len(vals))))
+                res = remap.apply_map(original, pm)
+                vec = run_battery(word_lines(res.corpus))
+                if vec:
+                    for k in METRICS:
+                        nulls[k].append(vec[k])
+            print(f"-- nulos: {args.nulls} relabelings del mismo mapa")
+            for k in METRICS:
+                xs = nulls[k]
+                if not xs:
+                    continue
+                real = sigs["descifrado"][k]
+                m = sum(xs) / len(xs)
+                sd = (sum((x - m) ** 2 for x in xs) / len(xs)) ** 0.5
+                flag = "" if min(xs) <= real <= max(xs) else " *FUERA*"
+                print(
+                    f"   {k:>11}: real={real:.3g}  "
+                    f"nulo={m:.3g}±{sd:.2g} "
+                    f"[{min(xs):.3g},{max(xs):.3g}]{flag}"
+                )
 
         for h in (NaturalLanguage(),):
             print(f"== {h.name}: {h.statement}")
