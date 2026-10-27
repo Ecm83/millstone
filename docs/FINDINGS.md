@@ -17,6 +17,7 @@
 | **Rongorongo** | ecos verbatim n≤9 + fórmulas cross-tablilla | **texto con refranes** |
 | **Cuneiforme (sux)** | hapax 60,6% + fórmulas legales masivas | **lengua natural administrativa** |
 | **Copiale cifrado** | eco letra-línea +47, sin palabras | **cifrado real (control)** |
+| **Lingua Ignota** | sufijos categóricos + fam 10% | **nomenclátor construido** |
 | Culpeper | funcionales + vocabulario abierto | lengua natural |
 | Sintético | gramática recuperada exacta | oráculo |
 
