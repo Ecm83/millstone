@@ -23,10 +23,20 @@ ejes:
   eco:
     - echo_z2       # z de colisiones verbatim n=2
     - echo_z3       # z de colisiones verbatim n=3
-  sintesis:
-    - model_compare # ganador DL + refutación de firma (A/B/C/D)
+    - echo_slope    # pendiente del decaimiento log-log (cliff vs cola)
+    - echo_nlast    # n máximo con colisiones (geometría del eco)
+
+# model_compare sale del vector: es diagnóstico de mecanismo (DL entre
+# modelos rivales), no posición en el panel — vive en hypotheses.
+
+# nulos declarados: shuffled intra-línea para outdeg/repmass/families/
+# echo; mi usa el mismo nulo de adyacencia barajada. heaps_beta se
+# ajusta por regresión log-log en 4 puntos del crecimiento (n/4..n).
 
 controles:
-  naturales: [culpeper]
-  administrativos: [cuneiform]
-  negativos_sinteticos: [shuffled, markov1, markov2, autocite, codebook]
+  naturales: [culpeper, copiale-de]
+  administrativos: [cuneiform, indus, lineara, protoelam]
+  cifrados: [copiale]
+  refranes: [rongorongo]
+  negativos_sinteticos: [shuffled, markov1, markov2, markov3, markov4,
+                         autocite, codebook]

@@ -80,7 +80,16 @@ producto de millstone.
   no discrimina (Culpeper sobre-genera 280× más); el rasgo real es
   crecimiento sub-lineal (Heaps β=0,66).
 
-## Batería pre-registrada (battery.yaml, hash fijado)
+## Batería pre-registrada (battery.yaml, hash `5bed9fa18f0b`)
+
+Spec v2: `echo_slope`/`echo_nlast` añadidos como ejes de eco;
+`model_compare` sale del vector (diagnóstico de mecanismo, no posición);
+controles poblados por familia — naturales [culpeper, copiale-de],
+administrativos [cuneiform, indus, lineara, protoelam],
+cifrados [copiale], refranes [rongorongo],
+sintéticos [shuffled, markov1-4, autocite, codebook].
+markov3/4 ya medidos: echo_z3 ≈ 0 — la memoria markoviana no produce
+eco a ningún orden.
 
 Vector a N=10k con nulos intra-línea — el panel ya es vectorial:
 
