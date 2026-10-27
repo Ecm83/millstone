@@ -5,6 +5,7 @@
     millstone check <corpus> <regla>          p.ej. followedby:q:o
     millstone frontier <corpus> <regla> <attr>  p.ej. attr=H (mano)
     millstone hypothesize <corpus> [nombre]
+    millstone <corpus> --map <mapa> testbed   candidato de descifrado
 """
 
 from __future__ import annotations
@@ -37,6 +38,13 @@ from millstone.hypotheses.wordorder import FreeWordOrder
 from millstone.hypotheses.families import ParadigmaticFamilies
 from millstone.hypotheses.clustering import LineClustering
 from millstone.hypotheses.flow import FlowAcrossLines
+from millstone.hypotheses.replication import (
+    HoldoutReplication,
+    RegionalReplication,
+)
+from millstone.hypotheses.drift import DriftProfile
+from millstone.hypotheses.echo import VerbatimEcho
+from millstone.hypotheses.modelcompare import ModelCompare
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
@@ -51,12 +59,29 @@ HYPOTHESES = {
     "paradigmatic-families": ParadigmaticFamilies,
     "line-clustering": LineClustering,
     "flow-across-lines": FlowAcrossLines,
+    "holdout-replication": HoldoutReplication,
+    "regional-replication": RegionalReplication,
+    "drift-profile": DriftProfile,
+    "verbatim-echo": VerbatimEcho,
+    "model-compare": ModelCompare,
 }
 
 
 def load(path: str, fmt: str):
     if fmt == "ivtff":
         return ivtff.parse_file(path)
+    if fmt == "protoelam":
+        from millstone.ingest import protoelam
+
+        return protoelam.parse_file(path)
+    if fmt == "rongorongo":
+        from millstone.ingest import rongorongo
+
+        return rongorongo.parse_dir(path)
+    if fmt == "cuneiform":
+        from millstone.ingest import cuneiform
+
+        return cuneiform.parse_file(path)
     return plaintext.parse_file(path)
 
 
@@ -83,7 +108,15 @@ def parse_constraint(spec: str):
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="millstone")
     p.add_argument("corpus", help="fichero de corpus (IVTFF o texto plano)")
-    p.add_argument("--format", choices=["ivtff", "plaintext"], default="ivtff")
+    p.add_argument(
+        "--format",
+        choices=["ivtff", "plaintext", "protoelam", "rongorongo", "cuneiform"],
+        default="ivtff",
+    )
+    p.add_argument(
+        "--map", dest="mapfile", metavar="FILE",
+        help="mapeo unidad→fonema: re-codifica el corpus antes de correr",
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("stats")
@@ -101,9 +134,17 @@ def main(argv=None) -> int:
     h.add_argument("name", nargs="?", choices=sorted(HYPOTHESES))
     r = sub.add_parser("report", help="corre todas las hipótesis y vuelca markdown")
     r.add_argument("--out", help="fichero de salida (stdout por defecto)")
+    sub.add_parser("testbed", help="evalúa un candidato de descifrado (--map)")
 
     args = p.parse_args(argv)
-    corpus = load(args.corpus, args.format)
+    original = load(args.corpus, args.format)
+    corpus = original
+    remapped = None
+    if args.mapfile:
+        from millstone.ingest import remap
+
+        remapped = remap.apply_map(corpus, remap.parse_map(args.mapfile))
+        corpus = remapped.corpus
     view = MemoryCorpusView(corpus)
 
     if args.cmd == "stats":
@@ -168,6 +209,63 @@ def main(argv=None) -> int:
             print(f"escrito {args.out}")
         else:
             print(text)
+        return 0
+
+    if args.cmd == "testbed":
+        if remapped is None:
+            raise SystemExit("testbed requiere --map <fichero de mapeo>")
+        from millstone.engine.battery import run_battery
+
+        print(f"== testbed: {args.mapfile}")
+        top = ", ".join(
+            f"{k!r} x{n}" for k, n in remapped.unmapped.most_common(8)
+        )
+        print(
+            f"cobertura: {remapped.coverage:.1%} de "
+            f"{remapped.total_leaves} unidades"
+            + (f" | sin mapear: {top}" if top else "")
+        )
+
+        group = corpus.schema.parent_level("word") or "word"
+
+        def word_lines(c):
+            v = MemoryCorpusView(c)
+            return [
+                list(s.symbols) for s in v.unit_sequences(group, "word")
+                if s.symbols
+            ]
+
+        for label, c in (("original", original), ("descifrado", corpus)):
+            v = MemoryCorpusView(c)
+            ws = [w for l in word_lines(c) for w in l]
+            ds = discover(v, "word")
+            basis = prune(v, "word", ds)
+            vec = run_battery(word_lines(c))
+            print(
+                f"-- {label}: alfabeto {len(alphabet(v))} | "
+                f"{len(ws)} palabras ({len(set(ws))} tipos) | "
+                f"candidatas {len(ds)}, base exacta {len(basis.basis)}"
+            )
+            if vec is None:
+                print("   batería: N insuficiente")
+            else:
+                print("   " + "  ".join(
+                    f"{k}={vec[k]:.3g}"
+                    for k in ("hapax", "heaps_beta", "timm", "families",
+                              "outdeg", "echo_z3")
+                ))
+
+        for h in (NaturalLanguage(),):
+            print(f"== {h.name}: {h.statement}")
+            for e in h.evaluate(corpus):
+                mark = {True: "SOPORTA", False: "REFUTA", None: "?"}[e.supported]
+                print(f"  [{mark:>7}] {e.prediction}\n            {e.detail}")
+        if "line" in corpus.schema.levels:
+            h = FreeWordOrder()
+            print(f"== {h.name}: {h.statement}")
+            for e in h.evaluate(corpus):
+                mark = {True: "SOPORTA", False: "REFUTA", None: "?"}[e.supported]
+                print(f"  [{mark:>7}] {e.prediction}\n            {e.detail}")
         return 0
 
     return 1

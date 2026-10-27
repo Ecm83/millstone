@@ -1,0 +1,36 @@
+# Candidato real: Stephen Bax (2014), "A proposed partial decoding of
+# the Voynich script" — Apéndice 1 (pp. 56-57), tabla completa de las
+# 14 relaciones signo→sonido propuestas.
+#
+# Donde Bax da alternativas, se toma la primera y se anota:
+#   d   → /t/ (o /d/, /θ/, /ð/ — "theta" por la forma del glifo)
+#   sh  → /x/ (o /kʰ/, /tʃ/)
+#   a   → /wa/ (o /ə/, /u/; Bax se inclina por waw árabe: consonante+ vocal)
+#   m,n → /r/ en posición final/aislada (Bax los separa de r por posición)
+#
+# Clusters (maximal-munch los casa antes que las letras sueltas):
+#   in → /ir/, iin → /ur/, ee → /o:/ (versión larga de /o/)
+#
+# NO están en su esquema: q, l, t, p, f, ch, cth, ckh, cph, cfh, g, b...
+# quedan en EVA crudo — la cobertura la reporta el testbed.
+#
+# Uso:
+#   python -m millstone data/raw/ZL3b-n.txt --map data/maps/bax2014.map testbed
+
+# vocales y clusters
+iin u r
+in  i r
+ee  o o
+o   a
+a   w
+e   o
+
+# consonantes
+sh  x
+k   k
+y   n
+d   t
+r   r
+m   r
+n   r
+s   s

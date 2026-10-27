@@ -99,3 +99,78 @@ def generate(
         root=Node(level="corpus", children=lines),
         meta={"source": "synthetic", "grammar": repr(grammar)},
     )
+
+
+# ---- generadores de negativos para la batería (devuelven líneas) ----
+
+
+def markov_lines(words, n_lines, lens, order: int = 1, seed: int = 0):
+    """Cadena de Markov sobre símbolos: genera formas de palabra libres
+    sin plantilla fija (negativo "combinatorio barato")."""
+    import random
+    from collections import defaultdict
+
+    rng = random.Random(seed)
+    trans = defaultdict(lambda: defaultdict(int))
+    starts = []
+    for w in words:
+        w = tuple(w)
+        hist = ("^",) * order
+        starts.append(w[:order])
+        for ch in w + ("$",):
+            trans[hist][ch] += 1
+            hist = tuple((hist + (ch,))[1:])
+    def gen():
+        hist = ("^",) * order
+        w = []
+        for _ in range(30):
+            nxt = trans.get(hist)
+            if not nxt:
+                break
+            ch = rng.choices(list(nxt), weights=list(nxt.values()))[0]
+            if ch == "$":
+                break
+            w.append(ch)
+            hist = tuple((hist + (ch,))[1:])
+        return tuple(w) if w else ("x",)
+    join = (lambda w: "".join(w)) if all(isinstance(w, str) for w in words) else (lambda w: w)
+    return [tuple(join(gen()) for _ in range(L))
+            for L in rng.choices(lens, k=n_lines)]
+
+
+def autocite_lines(words, n_lines, lens, p_copy=0.15, p_mut=0.08, K=16,
+                   seed: int = 0):
+    """Generador de autocita (Timm): copia reciente + muta a 1 edición."""
+    import random
+    from millstone.engine.generative import _mutate
+
+    rng = random.Random(seed)
+    vocab = list(set(words))
+    uni = {w: words.count(w) for w in vocab}
+    out = []
+    for L in rng.choices(lens, k=n_lines):
+        line = []
+        for _ in range(L):
+            r = rng.random()
+            rec = line[-K:]
+            if rec and r < p_copy:
+                line.append(rng.choice(rec))
+            elif rec and r < p_copy + p_mut:
+                m = _mutate(rng.choice(rec), rng, uni)
+                line.append("".join(m) if isinstance(rec[0], str) else m)
+            else:
+                line.append(rng.choices(vocab, weights=[uni[w] for w in vocab])[0])
+        out.append(tuple(line))
+    return out
+
+
+def recode_as_codebook(lines, seed: int = 0):
+    """Recodifica palabra->entrada opaca: cada tipo se vuelve un código
+    atómico. Misma estadística de token, estructura interna borrada —
+    el codebook perfecto conocido."""
+    import random
+    rng = random.Random(seed)
+    types = list({w for l in lines for w in l})
+    rng.shuffle(types)
+    code = {w: f"E{i:05d}" for i, w in enumerate(types)}
+    return [tuple(code[w] for w in l) for l in lines]

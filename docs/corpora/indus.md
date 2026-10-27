@@ -30,3 +30,22 @@
 cortas, marcadores posicionales (sellos + etiqueta breve, no prosa).
 millstone distingue "gramática de palabra" (Voynich) de "posición de
 signo" (Indo) sin código específico.
+
+## Findings
+
+## Escritura del Indo — sello administrativo
+
+`ingest/indus.py` sobre el corpus ICIT/Mahadevan (4.449 inscripciones,
+672 signos, longitud media 3,9):
+
+- **Normalización de dirección**: el CSV guarda orden físico; los sellos
+  se leen R/L mayormente → `normalize_direction` invierte para obtener
+  el orden de lectura. Sin esto, el signo terminal aparece al principio.
+- **Marcadores posicionales**: signo 740 ("jar") es final el 66% de las
+  veces en orden de lectura — marcador terminal. Signo 700 inicial el
+  76% — marcador inicial.
+- **Núcleos con hapax 84%** — cada inscripción lleva una secuencia
+  central casi única (nombre/identificador).
+- Estructura: `marcador inicial + núcleo + marcador terminal` — el
+  patrón de un sello administrativo (heráldico/toponímico/de propiedad),
+  no de una lengua corrida.

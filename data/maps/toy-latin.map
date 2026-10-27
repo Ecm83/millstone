@@ -1,0 +1,43 @@
+# Mapa de EJEMPLO para `testbed` — no es un descifrado serio.
+#
+# Formato: <unidad fuente> <token1> [token2 ...]
+#   `-` como objetivo borra la unidad. `#` comenta.
+# La fuente se casa por maximal-munch sobre las hojas de cada palabra:
+# las claves largas (bancos EVA) ganan a las cortas.
+#
+# Uso:
+#   python -m millstone data/raw/ZL3b-n.txt --map data/maps/toy-latin.map testbed
+#   python -m millstone data/raw/ZL3b-n.txt --map data/maps/toy-latin.map discover
+
+# bancos EVA (ligaduras) → fonema único
+cth     t
+ckh     k
+cph     p
+cfh     f
+ch      s
+sh      x
+
+# letras sueltas → latín vulgar aproximado
+q       k
+o       a
+e       e
+y       i
+a       a
+d       d
+l       l
+r       r
+n       n
+s       s
+t       t
+k       t
+p       p
+f       f
+m       m
+g       g
+i       i
+c       k
+h       -
+4       o
+
+# lecturas inciertas: fuera del análisis
+?       -

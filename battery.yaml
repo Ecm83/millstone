@@ -1,0 +1,32 @@
+# battery.yaml — vector de rasgos pre-registrado (congelado antes de
+# correr corpus nuevos). Reglas: N fijo, razones contra nulo (nunca
+# valores brutos), bootstrap por bloques, hash de este archivo en cada
+# reporte.
+
+n_tokens: [10000, 30000]
+reps: 20
+
+ejes:
+  apertura_lexica:
+    - hapax         # fracción de tipos con 1 ocurrencia (N fijo)
+    - ttr           # tipos/tokens
+    - heaps_beta    # exponente de Heaps (log-log, 4 puntos)
+    - new1k         # tipos nuevos por 1.000 tokens en último cuartil
+  plantilla:
+    - timm          # cobertura held-out del bigrama de símbolos
+    - families      # % tipos con vecino a edición 1 / nulo barajado
+  orden:
+    - outdeg        # out-degree top-50 real / barajado intra-línea
+    - mi            # información mutua de adyacentes (bits)
+  linea:
+    - repmass       # masa de tokens repetidos intra-línea / nulo
+  eco:
+    - echo_z2       # z de colisiones verbatim n=2
+    - echo_z3       # z de colisiones verbatim n=3
+  sintesis:
+    - model_compare # ganador DL + refutación de firma (A/B/C/D)
+
+controles:
+  naturales: [culpeper]
+  administrativos: [cuneiform]
+  negativos_sinteticos: [shuffled, markov1, markov2, autocite, codebook]

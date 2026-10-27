@@ -212,3 +212,155 @@ def test_closed_lexicon_on_voynich():
 
     evidence = ClosedLexicon().evaluate(parse_file(DATA))
     assert all(e.supported for e in evidence)
+
+
+def test_holdout_replication_on_synthetic():
+    # gramática real y estable: las reglas inducidas deben replicar entre
+    # mitades y colapsar sobre la mitad barajada
+    from millstone.hypotheses.replication import HoldoutReplication
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar
+
+    corpus = generate(q_o_grammar(), n_words=2000, seed=17)
+    evidence = HoldoutReplication().evaluate(corpus)
+    by_pred = {e.prediction: e for e in evidence}
+    assert by_pred["reglas exactas de A replican en B"].supported is True
+    mill = by_pred[
+        "la replicación supera al corpus barajado (Mill: diferencia)"
+    ]
+    assert mill.supported is True
+
+
+def test_holdout_replication_tiny_corpus():
+    from millstone.hypotheses.replication import HoldoutReplication
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar
+
+    corpus = generate(q_o_grammar(), n_words=50, seed=1)
+    evidence = HoldoutReplication().evaluate(corpus)
+    assert evidence[0].supported is None
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_holdout_replication_on_voynich():
+    # medido: las reglas inducidas replican out-of-sample
+    from millstone.hypotheses.replication import HoldoutReplication
+
+    evidence = HoldoutReplication().evaluate(parse_file(DATA))
+    by_pred = {e.prediction: e for e in evidence}
+    mill = by_pred[
+        "la replicación supera al corpus barajado (Mill: diferencia)"
+    ]
+    assert mill.supported is True  # la gramática es real, no ruido
+
+
+def test_regional_replication_on_synthetic():
+    # gramática estacionaria: el split contiguo también debe replicar
+    from millstone.hypotheses.replication import RegionalReplication
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar
+
+    corpus = generate(q_o_grammar(), n_words=2000, seed=17)
+    evidence = RegionalReplication().evaluate(corpus)
+    assert all(e.supported for e in evidence)
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_regional_replication_on_voynich():
+    # medido: núcleo duro estacionario (48/48 exactas) pero las casi-reglas
+    # derivan entre mitades - la deriva se concentra en el contexto de 'o'
+    from millstone.hypotheses.replication import RegionalReplication
+
+    evidence = RegionalReplication().evaluate(parse_file(DATA))
+    by_pred = {e.prediction: e for e in evidence}
+    assert by_pred["reglas exactas de A replican en B"].supported is True
+    assert by_pred["casi-reglas mantienen su frontera en B"].supported is False
+    mill = by_pred[
+        "la replicación supera al corpus barajado (Mill: diferencia)"
+    ]
+    assert mill.supported is True
+
+
+def test_drift_profile_no_folio_level():
+    # sin atributos $Q/$L (sintético, plaintext) -> evidencia insuficiente
+    from millstone.hypotheses.drift import DriftProfile
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar
+
+    corpus = generate(q_o_grammar(), n_words=500, seed=3)
+    evidence = DriftProfile().evaluate(corpus)
+    assert evidence[0].supported is None
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_drift_profile_on_voynich():
+    # medido (por ocurrencia): la deriva es REAL - intra-lengua 34,9% vs
+    # nulo 11,3% y gap Currier 19,4% vs nulo 0,9% - pero la dispersión
+    # intra-lengua supera al gap A/B: textura de grano quire, no dos
+    # dialectos
+    from millstone.hypotheses.drift import DriftProfile
+
+    evidence = DriftProfile().evaluate(parse_file(DATA))
+    by_pred = {e.prediction: e for e in evidence}
+    currier = by_pred["la deriva se alinea con el corte Currier ($L)"]
+    assert currier.supported is False
+    mill = by_pred[
+        "el gap Currier supera al corpus barajado (Mill: diferencia)"
+    ]
+    assert mill.supported is True
+    residual = by_pred[
+        "residual gradual dentro de lengua, por encima del nulo mecánico"
+    ]
+    assert residual.supported is True
+
+
+def test_verbatim_echo_synthetic_at_null():
+    # generación independiente: las colisiones caen dentro del nulo -
+    # el instrumento no inventa eco donde no lo hay
+    from millstone.hypotheses.echo import VerbatimEcho
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar
+
+    corpus = generate(q_o_grammar(), n_words=2000, seed=17)
+    evidence = VerbatimEcho(replicates=10).evaluate(corpus)
+    assert evidence[0].supported is False
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_verbatim_echo_on_voynich():
+    # medido: ecos cortos inflados (z=+8.6/+20 en n<=3), la colisión n=4
+    # cae en rango nulo y es intra-escriba (mismo quire M, mano 2, B)
+    from millstone.hypotheses.echo import VerbatimEcho
+
+    evidence = VerbatimEcho().evaluate(parse_file(DATA))
+    by_pred = {e.prediction: e for e in evidence}
+    desvio = next(e for e in evidence if "desvían" in e.prediction)
+    assert desvio.supported is True
+    contexto = next(e for e in evidence if "contexto" in e.prediction)
+    assert contexto.supported is False  # sin eco más largo
+    local = next(e for e in evidence if "intra-mano" in e.prediction)
+    assert local.supported is True  # mismo quire/mano/lengua
+
+
+def test_model_compare_calibrates_on_slot_corpus():
+    # un corpus generado por slots debe ser ganado por C en ambos splits
+    from millstone.hypotheses.modelcompare import ModelCompare
+    from millstone.ingest.synthetic import generate
+    from test_synthetic import q_o_grammar
+
+    corpus = generate(q_o_grammar(), n_words=4000, seed=7)
+    ev = ModelCompare().evaluate(corpus)
+    assert "C-combinatorio" in ev[0].detail
+    assert ev[1].supported is True  # ganador estable en contigua
+
+
+@pytest.mark.skipif(not DATA.exists(), reason="corpus ZL no descargado")
+def test_model_compare_on_voynich():
+    # medido: C gana DL pero ningun modelo reproduce la firma -
+    # el vocabulario es una seleccion dentro del espacio generativo
+    from millstone.hypotheses.modelcompare import ModelCompare
+
+    ev = ModelCompare().evaluate(parse_file(DATA))
+    assert "C-combinatorio" in ev[0].detail
+    assert ev[1].supported is True
+    assert ev[2].supported is False  # nadie reproduce la firma

@@ -32,9 +32,12 @@ class InitialEffect:
             return []
         rows = []
         for sym, n in initials.most_common():
-            ratio = (n / total_i) / (marginal[sym] / total_m)
+            base = marginal[sym] / total_m
+            if not base:
+                continue
+            ratio = (n / total_i) / base
             if n >= self.min_support:
-                rows.append((sym, n, total_i, ratio, marginal[sym] / total_m))
+                rows.append((sym, n, total_i, ratio, base))
         return rows
 
     def evaluate(self, corpus: Corpus) -> list[Evidence]:
@@ -44,11 +47,17 @@ class InitialEffect:
         )
         out = []
         for level in ("line", "paragraph"):
-            firsts = Counter(
-                seq.symbols[0][0]
-                for seq in view.unit_sequences(level, "word")
-                if seq.symbols and seq.symbols[0]
-            )
+            if level not in corpus.schema.levels:
+                continue
+            # primer símbolo hoja de la primera palabra de cada unidad
+            firsts = Counter()
+            for unit in corpus.nodes(level):
+                for word in unit.iter_level("word"):
+                    for leaf in word.leaves():
+                        if leaf.value is not None:
+                            firsts[leaf.value] += 1
+                            break
+                    break
             rows = self._enrichment(firsts, marginal)
             enriched = [r for r in rows if r[3] >= self.min_ratio]
             top = max(rows, key=lambda r: r[3]) if rows else None

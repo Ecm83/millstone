@@ -22,6 +22,17 @@ class Constraint:
         """Violadores mínimos: el borde inválido que la regla define."""
         raise NotImplementedError
 
+    def events(self, symbols: tuple[str, ...]) -> tuple[int, int]:
+        """(ocasiones, violaciones) a nivel de evento trigger.
+
+        Las reglas con trigger (`q->o`, previo de `n`) se miden por
+        ocurrencia del símbolo foco: P(violar | trigger) - factoriza la
+        longitud de la secuencia, que de otro modo confunde toda tasa
+        por palabra (más símbolos = más ocasiones de fallo). Las reglas
+        globales/posicionales devuelven una sola ocasión por secuencia.
+        """
+        return (1, 0 if self.holds(symbols) else 1)
+
 
 @dataclass(frozen=True)
 class FollowedBy(Constraint):
@@ -39,6 +50,15 @@ class FollowedBy(Constraint):
                 if i + 1 >= len(symbols) or symbols[i + 1] != self.required:
                     return False
         return True
+
+    def events(self, symbols: tuple[str, ...]) -> tuple[int, int]:
+        opp = viol = 0
+        for i, s in enumerate(symbols):
+            if s == self.trigger:
+                opp += 1
+                if i + 1 >= len(symbols) or symbols[i + 1] != self.required:
+                    viol += 1
+        return (opp, viol)
 
     def negatives(self, alphabet: frozenset[str]) -> Iterator[tuple[str, ...]]:
         yield (self.trigger,)
@@ -63,6 +83,15 @@ class NextInSet(Constraint):
                     return False
         return True
 
+    def events(self, symbols: tuple[str, ...]) -> tuple[int, int]:
+        opp = viol = 0
+        for i, s in enumerate(symbols):
+            if s == self.trigger:
+                opp += 1
+                if i + 1 >= len(symbols) or symbols[i + 1] not in self.allowed:
+                    viol += 1
+        return (opp, viol)
+
     def negatives(self, alphabet: frozenset[str]) -> Iterator[tuple[str, ...]]:
         yield (self.trigger,)
         for a in sorted(alphabet - self.allowed):
@@ -85,6 +114,15 @@ class PrevInSet(Constraint):
                 if i == 0 or symbols[i - 1] not in self.allowed:
                     return False
         return True
+
+    def events(self, symbols: tuple[str, ...]) -> tuple[int, int]:
+        opp = viol = 0
+        for i, s in enumerate(symbols):
+            if s == self.symbol:
+                opp += 1
+                if i == 0 or symbols[i - 1] not in self.allowed:
+                    viol += 1
+        return (opp, viol)
 
     def negatives(self, alphabet: frozenset[str]) -> Iterator[tuple[str, ...]]:
         yield (self.symbol,)
@@ -131,6 +169,16 @@ class ForbidsBigram(Constraint):
     def holds(self, symbols: tuple[str, ...]) -> bool:
         return self.pair not in zip(symbols, symbols[1:])
 
+    def events(self, symbols: tuple[str, ...]) -> tuple[int, int]:
+        a, b = self.pair
+        opp = viol = 0
+        for i, s in enumerate(symbols[:-1]):
+            if s == a:
+                opp += 1
+                if symbols[i + 1] == b:
+                    viol += 1
+        return (opp, viol)
+
     def negatives(self, alphabet: frozenset[str]) -> Iterator[tuple[str, ...]]:
         yield self.pair
 
@@ -152,6 +200,16 @@ class OnlyInPosition(Constraint):
                 if pos != self.index:
                     return False
         return True
+
+    def events(self, symbols: tuple[str, ...]) -> tuple[int, int]:
+        opp = viol = 0
+        for i, s in enumerate(symbols):
+            if s == self.symbol:
+                opp += 1
+                pos = i if self.index >= 0 else i - len(symbols)
+                if pos != self.index:
+                    viol += 1
+        return (opp, viol)
 
     def negatives(self, alphabet: frozenset[str]) -> Iterator[tuple[str, ...]]:
         others = sorted(alphabet - {self.symbol})
@@ -180,6 +238,12 @@ class SymbolAt(Constraint):
         if not 0 <= i < len(symbols):
             return True
         return symbols[i] in self.allowed
+
+    def events(self, symbols: tuple[str, ...]) -> tuple[int, int]:
+        i = self.index if self.index >= 0 else len(symbols) + self.index
+        if not 0 <= i < len(symbols):
+            return (0, 0)
+        return (1, 0 if symbols[i] in self.allowed else 1)
 
     def negatives(self, alphabet: frozenset[str]) -> Iterator[tuple[str, ...]]:
         i = abs(self.index)

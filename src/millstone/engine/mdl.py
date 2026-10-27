@@ -135,6 +135,26 @@ def entails(a: Constraint, b: Constraint) -> bool:
     return False
 
 
+def _entail_key(c: Constraint) -> str | None:
+    """Símbolo bajo el que `c` puede entrañar otras reglas (None: nunca)."""
+    if isinstance(c, (FollowedBy, NextInSet)):
+        return c.trigger
+    if isinstance(c, (PrevInSet, OnlyInPosition)):
+        return c.symbol
+    return None
+
+
+def _target_keys(c: Constraint) -> tuple[str, ...]:
+    """Símbolos bajo los que `c` puede ser entrañada por otra regla."""
+    if isinstance(c, ForbidsBigram):
+        return c.pair
+    if isinstance(c, (NextInSet, FollowedBy)):
+        return (c.trigger,)
+    if isinstance(c, PrevInSet):
+        return (c.symbol,)
+    return ()
+
+
 @dataclass(frozen=True)
 class MDLResult:
     basis: list[Discovery]
@@ -161,23 +181,47 @@ def prune(view: CorpusView, level: str, discoveries: list[Discovery]) -> MDLResu
     alpha = frozenset(
         s for seq in view.sequences(level) for s in seq.symbols
     )
-    coverage = [
-        sum(
+
+    # Índices por símbolo clave: entails() solo puede ser cierto cuando
+    # la clave del entrañador está en las claves de la entrañada - así el
+    # cálculo de cobertura no es O(n²) sobre el corpus abierto (decenas
+    # de miles de ForbidsBigram en alfabetos grandes).
+    from collections import defaultdict
+
+    targets: dict[str, set[int]] = defaultdict(set)
+    for i, d in enumerate(discoveries):
+        for k in _target_keys(d.constraint):
+            targets[k].add(i)
+
+    coverage = [0] * len(discoveries)
+    for i, d in enumerate(discoveries):
+        k = _entail_key(d.constraint)
+        if k is None:
+            continue
+        coverage[i] = sum(
             1
-            for j, o in enumerate(discoveries)
-            if i != j and entails(d.constraint, o.constraint)
+            for j in targets[k]
+            if j != i and entails(d.constraint, discoveries[j].constraint)
         )
-        for i, d in enumerate(discoveries)
-    ]
+
     order = sorted(
         range(len(discoveries)),
         key=lambda i: (-coverage[i], -discoveries[i].support),
     )
     basis: list[Discovery] = []
+    basis_idx: dict[str, set[int]] = defaultdict(set)
     for i in order:
         d = discoveries[i]
-        if not any(entails(k.constraint, d.constraint) for k in basis):
+        cand: set[int] = set()
+        for k in _target_keys(d.constraint):
+            cand |= basis_idx.get(k, set())
+        if not any(
+            entails(discoveries[j].constraint, d.constraint) for j in cand
+        ):
             basis.append(d)
+            ek = _entail_key(d.constraint)
+            if ek is not None:
+                basis_idx[ek].add(i)
 
     constraints = [d.constraint for d in basis]
     return MDLResult(

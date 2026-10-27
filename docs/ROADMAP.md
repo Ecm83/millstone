@@ -1,11 +1,13 @@
 # Roadmap
 
 > Documentación por corpus en `docs/corpora/`: `voynich.md`, `indus.md`,
-> `lineara.md`, `culpeper.md`, `synthetic.md`
+> `lineara.md`, `culpeper.md`, `protoelamite.md`, `rongorongo.md`,
+> `rongorongo.md`, `cuneiform.md`, `protocuneiform.md`,
+> `synthetic.md`
 
 millstone es un motor genérico de caracterización gramatical. El Voynich
 es el caso de estudio estrella, no el sistema. Estado: **completo** —
-pipeline entero verificado sobre cinco corpus, 75 tests.
+pipeline entero verificado sobre nueve corpus, 110 tests.
 
 ## Fase 0 — Fundaciones ✅
 
@@ -23,6 +25,18 @@ pipeline entero verificado sobre cinco corpus, 75 tests.
 - [x] `render.py` — re-codificación glifo→grafema (control de sesgo EVA)
 - [x] `indus.py` — corpus ICIT/Mahadevan, normalización de dirección R/L
 - [x] `lineara.py` — corpus Navarre-AI (GORILA+SigLA), codepoints Unicode
+- [x] `protoelam.py` — corpus CDLI (1.384 tablillas MDP `qpc`), dual
+      signos M + numerales N con cantidades en attrs (sirve también
+      para proto-cuneiforme, `protocuneiform.atf`)
+- [x] `rongorongo.py` — corpus RR-corpus XML (Barthel, 6 tablillas),
+      5.460 glifos / 941 códigos, bustrofedon
+- [x] `cuneiform.py` — muestra 2.500 textos `sux` CDLI
+- [x] `engine/metrics.py` + `engine/battery.py` + `battery.yaml` —
+      batería pre-registrada a N fijo (razones vs nulo, bootstrap
+      por bloques)
+- [x] `engine/generative.py` — modelos A/B/C/D con sample()+DL
+- [x] `hypotheses/modelcompare.py` — comparación MDL de mecanismos — muestra 2.500 textos `sux` CDLI, signos
+      separados por guion dentro de palabra
 
 ## Fase 2 — `engine` genérico ✅
 
@@ -59,12 +73,26 @@ enlazada. Evaluadas sobre el corpus real:
 - [x] `flow-across-lines` — REFUTADO: celdas independientes
 - [x] `paradigmatic-families` — vocabulario de variantes (73,7%)
 - [x] `productive-grammar` — REFUTADO: no genera formas nuevas
+- [x] `holdout-replication` — reglas inducidas en mitad A replican 100%
+      en mitad B reservada vs 37% barajada
+- [x] `regional-replication` — split contiguo: exactas estacionarias
+      (48/48), casi-reglas derivan por región (contextos de `o`)
+- [x] `drift-profile` — deriva REAL a grano quire (intra 34,9% vs nulo
+      11,3%; gap Currier 19,4% vs 0,9%) tras corregir el confounder de
+      longitud con tasas por ocurrencia (`Constraint.events`)
+- [x] `verbatim-echo` — ecos cortos inflados (n≤3, z>8); la colisión
+      n=4 única cae en rango nulo y es intra-escriba (quire M, mano 2)
 
 ## Fase 4 — `store` + `cli` ✅
 
 - [x] Neo4j en vivo: 237k nodos, `Constraint→Word`, `Hypothesis→Evidence`
       navegable en localhost:7474
 - [x] CLI: `stats` `discover` `check` `frontier` `hypothesize` `report`
+      `testbed`
+- [x] Testbed de candidatos de descifrado: `--map` (ingest/remap,
+      maximal-munch unidad→fonema, fusión y borrado) re-codifica el
+      corpus para cualquier comando; `testbed` compara firma y base de
+      reglas original vs descifrada
 
 ## Fase 5 — Multicorpus (la fase que resultó ser el punto)
 
@@ -78,7 +106,6 @@ producto**, no un paso más hacia el Voynich.
 - [ ] Excluir `?` (lecturas inciertas) del alfabeto en análisis
 - [ ] `TranscriptionComparison` formal con more granularidad de locus
 - [ ] FSA/slot grammar exportado a Neo4j como grafo navegable
-- [ ] Testbed de candidatos de descifrado (mapeo glifo→fonema + check)
 
 ## Lógica del orden
 

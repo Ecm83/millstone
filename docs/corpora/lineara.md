@@ -24,3 +24,24 @@ El hapax extremo y los tokens numéricos son la firma de un archivo
 administrativo — la misma clase de texto que Lineal B (descifrado porque
 era griego contando ganado). La lectura "textos sagrados" no se sostiene:
 la forma es la de la burocracia de almacén.
+
+## Findings
+
+## Lineal A — contabilidad palacial
+
+`ingest/lineara.py` sobre el corpus Navarre-AI (GORILA+SigLA, 1.637 docs
+con texto, 3.767 palabras):
+
+- Inventario de soportes: **913 nódulos + 489 tablillas + 194 roundels**
+  ≈ 80% archivo administrativo.
+- **40% de tokens contienen números egeos** (U+101xx); 42% de "palabras"
+  son un solo signo → líneas de partida `commodity: cantidad`.
+- **hapax 89,7%** — cada "palabra" es casi única (nombres propios);
+  solo 24 secuencias multi-signo reaparecen en >1 doc.
+- `U+1076B` abre 1.284 palabras — ideograma de producto dominante.
+
+Firma: **listas contables con nombres** — la estructura de un archivo de
+palacio, no de textos sagrados. El mismo perfil formal que Lineal B
+(descifrado porque era griego contando ganado); aquí la lengua base es
+eteocretense, pero la forma del corpus es idéntica: burocracia de
+almacén.

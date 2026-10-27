@@ -48,12 +48,14 @@ millstone/
 ├── model.py     modelo de corpus genérico (schema de niveles + nodos)
 ├── ingest/      adaptadores de fuente → modelo: ivtff (Voynich),
 │                plaintext, synthetic, render (re-codificación),
-│                indus (ICIT), lineara (GORILA). Sin dependencias de grafo
+│                indus (ICIT), lineara (GORILA), protoelam (CDLI),
+│                rongorongo (Barthel), cuneiform (CDLI, sux+qpc).
+│                Sin dependencias de grafo
 ├── store/       modelo → Neo4j (almacén + exploración visual; NO razona)
 ├── engine/      motor: view, constraints (8 tipos), check, discover
 │                (Pareto), mdl, frontier, induce, glyphs (nivel glifo)
 │                opera sobre CorpusView (interfaz abstracta; Neo4j o RAM)
-├── hypotheses/  12 hipótesis evaluadas: predicciones, refutaciones,
+├── hypotheses/  17 hipótesis evaluadas: predicciones, refutaciones,
 │                geometrías de frontera — todas con evidencia enlazada
 └── cli/         punto de entrada que conecta todo
 ```
@@ -64,7 +66,7 @@ intercambiable.
 
 ## Estado
 
-Funcional end-to-end y calibrado sobre **cinco corpus** (ver
+Funcional end-to-end y calibrado sobre **nueve corpus** (ver
 `docs/corpora/` y `docs/FINDINGS.md` para los hallazgos medidos):
 
 | Corpus | Firma detectada | Veredicto |
@@ -76,6 +78,9 @@ Funcional end-to-end y calibrado sobre **cinco corpus** (ver
 | **Sintético** | gramática recuperada exacta | oráculo ✓ |
 
 CLI: `python -m millstone <corpus> stats|discover|check|frontier|
-hypothesize|report`. `report` regenera los veredictos en markdown.
+hypothesize|report|testbed`. `report` regenera los veredictos en
+markdown. `--map <fichero>` re-codifica el corpus con un candidato de
+descifrado (unidad→fonema, maximal-munch; ver `data/maps/`) antes de
+cualquier comando; `testbed` compara la firma original vs descifrada.
 Neo4j opcional: `docker compose up -d` → grafo navegable con
 `Constraint→Word` e `Hypothesis→Evidence`.
