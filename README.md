@@ -67,7 +67,8 @@ intercambiable.
 ## Estado
 
 Funcional end-to-end y calibrado sobre **nueve corpus** (ver
-`docs/corpora/` y `docs/FINDINGS.md` para los hallazgos medidos):
+`docs/corpora/` y `docs/FINDINGS.md` para los hallazgos medidos;
+`docs/PAPER.md` para la nota informal):
 
 | Corpus | Firma detectada | Veredicto |
 |---|---|---|

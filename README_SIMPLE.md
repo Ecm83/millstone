@@ -130,6 +130,7 @@ Tests: `pytest` (110 tests).
 
 ## Documentación en serio
 
+- `docs/PAPER.md` — la nota informal con todos los números
 - `README.md` — la versión técnica de esto
 - `docs/FINDINGS.md` — todos los hallazgos con números
 - `docs/REPORT.md` — el informe generado
