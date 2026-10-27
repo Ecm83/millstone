@@ -60,6 +60,10 @@ producto de millstone.
   elimina (migra a y/h), y los perfiles por quire correlacionan de
   forma estructurada — `o<-h` vs `h→{y,d}` anti-correlacionan a
   r=−0,74: regiones que relajan una restricción tensan la hermana.
+- Firma por sección (`sec_battery.py`, N=2000): la clase inventario es
+  uniforme, pero el eco no — recipes/biological/herbal echo3 11-15
+  (catálogo con repetición), astronomical/pharmaceutical 0-3 (inventario
+  puro sin eco). El corpus no es homogéneo en textura.
 - El cifrado real no firma como el Voynich: Copiale a nivel letra tiene
   eco_z3 **+47** (la homofonía filtra los n-gramas del plaintext); el
   Voynich tiene **−189** (supresión de colisiones). Signo opuesto —
