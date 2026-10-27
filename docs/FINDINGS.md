@@ -75,7 +75,11 @@ producto de millstone.
   autocita (D, copiar+mutar) reproduce mejor la firma. Divergencia
   resuelta por descomposición: ningún mecanismo solo explica la firma —
   coll2/coll4→B (suelo i.i.d. del léxico), hapax/coll3/repmass→D
-  (exceso de autocita). El Voynich es catálogo + autocita, no un
+  (exceso de autocita); con E (trigrama-KN, memoria variable) entra el
+  quinto rival: **pierde mal en DL (0,63 Mb, el más caro)** — no hay
+  memoria de palabras de orden ≤3 que se pague — aunque gana `fam`
+  (aprende qué tipos siguen a qué tipos). El Voynich es catálogo +
+  autocita, no un
   generador libre ni una lengua. "Léxico cerrado" caído: la razón FSA/tipos
   no discrimina (Culpeper sobre-genera 280× más); el rasgo real es
   crecimiento sub-lineal (Heaps β=0,66).
