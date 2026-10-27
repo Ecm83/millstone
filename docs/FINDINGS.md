@@ -45,6 +45,20 @@ producto de millstone.
   eco baja (22,8→17,7) y la base exacta cae 263→187 — ~76 reglas
   "exactas" apoyaban en lecturas en disputa. La transcripción es un
   cuarto de ruido potencial; la clase no depende de él.
+- Geometría del eco (`echo_decay_profile`): el Voynich es el único
+  cliff del panel — colisiones mueren en n=4 (slope −3,89, r²=,97)
+  mientras todo lo demás tiene cola hasta n=9-10 (Culpeper −0,76,
+  cuneiforme −0,62 r²=1,0 fórmulas legales, Rongorongo −0,72,
+  Copiale −0,84). La forma del decaimiento separa catálogo de
+  refranes/copia mejor que el z a n fijo.
+- Ancla fonotáctica (`phonotactic`): cv_alt de Culpeper 0,69 vs
+  Voynich-EVA 0,57; en testbed, Bax sube alternancia sobre su nulo
+  (0,525 vs [0,31,0,49]) — evidencia débil pero real de que su
+  asignación toca estructura.
+- La deriva no es un subsistema ni una textura única: borrar `o` no la
+  elimina (migra a y/h), y los perfiles por quire correlacionan de
+  forma estructurada — `o<-h` vs `h→{y,d}` anti-correlacionan a
+  r=−0,74: regiones que relajan una restricción tensan la hermana.
 - El cifrado real no firma como el Voynich: Copiale a nivel letra tiene
   eco_z3 **+47** (la homofonía filtra los n-gramas del plaintext); el
   Voynich tiene **−189** (supresión de colisiones). Signo opuesto —

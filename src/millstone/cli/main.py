@@ -254,6 +254,7 @@ def main(argv=None) -> int:
         if remapped is None:
             raise SystemExit("testbed requiere --map <fichero de mapeo>")
         from millstone.engine.battery import run_battery
+        from millstone.engine import metrics as M
 
         print(f"== testbed: {args.mapfile}")
         top = ", ".join(
@@ -295,26 +296,44 @@ def main(argv=None) -> int:
                 print("   " + "  ".join(
                     f"{k}={vec[k]:.3g}" for k in METRICS
                 ))
+            ph = M.phonotactic(s.symbols for s in v.sequences("word"))
+            sigs[label + "-ph"] = ph
+            print(
+                f"   fonotáctica: vowel={ph['vowel']:.3g} "
+                f"cv_alt={ph['cv_alt']:.3g}"
+            )
 
         if args.nulls and sigs["descifrado"]:
             import random
 
+            PHONO = ("vowel", "cv_alt")
             rng = random.Random(0)
             keys, vals = list(mapping), list(mapping.values())
-            nulls: dict[str, list[float]] = {k: [] for k in METRICS}
+            nulls: dict[str, list[float]] = {
+                k: [] for k in METRICS + PHONO
+            }
             for _ in range(args.nulls):
                 pm = dict(zip(keys, rng.sample(vals, len(vals))))
                 res = remap.apply_map(original, pm)
                 vec = run_battery(word_lines(res.corpus))
+                ph = M.phonotactic(
+                    s.symbols
+                    for s in MemoryCorpusView(res.corpus).sequences("word")
+                )
                 if vec:
                     for k in METRICS:
                         nulls[k].append(vec[k])
+                    for k in PHONO:
+                        nulls[k].append(ph[k])
             print(f"-- nulos: {args.nulls} relabelings del mismo mapa")
-            for k in METRICS:
+            real_ph = sigs["descifrado-ph"]
+            for k in METRICS + PHONO:
                 xs = nulls[k]
                 if not xs:
                     continue
-                real = sigs["descifrado"][k]
+                real = (
+                    real_ph[k] if k in PHONO else sigs["descifrado"][k]
+                )
                 m = sum(xs) / len(xs)
                 sd = (sum((x - m) ** 2 for x in xs) / len(xs)) ** 0.5
                 flag = "" if min(xs) <= real <= max(xs) else " *FUERA*"
@@ -441,6 +460,27 @@ def main(argv=None) -> int:
                     continue
                 print(f"  {k:>10}: {v:.4g}")
             print(f"  {'hash':>10}: {vec['hash']}")
+        # métricas extra fuera del vector congelado
+        from millstone.engine import metrics as M
+
+        dec = M.echo_decay_profile(lines)
+        if dec:
+            print(
+                f"  {'echo_n':>10}: {dec['n_last']} "
+                f"(exp={dec['slope_exp']:.3g} r2={dec['r2_exp']:.2g} | "
+                f"pow={dec['slope_pow']:.3g} r2={dec['r2_pow']:.2g})"
+            )
+        ph = M.phonotactic(
+            s.symbols
+            for s in view.sequences(
+                "word" if "word" in corpus.schema.levels else group
+            )
+        )
+        if ph:
+            print(
+                f"  {'vowel':>10}: {ph['vowel']:.3g} | "
+                f"cv_alt={ph['cv_alt']:.3g}"
+            )
         return 0
 
     return 1

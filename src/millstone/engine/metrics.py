@@ -210,6 +210,74 @@ def repeat_mass(lines, rng, reps: int = 10) -> tuple[float, float]:
     return real, sum(nulls) / len(nulls)
 
 
+def echo_decay_profile(lines, n_max: int = 10) -> dict | None:
+    """Geometría del eco: decaimiento de colisiones verbatim por n.
+
+    Un cliff (catálogo) cae a 0 en n bajo — proceso sin memoria larga.
+    Una cola (refranes/fórmulas) sigue decayendo gradualmente — proceso
+    con copia literal. Se ajusta log c(n) vs n (exponencial) y vs log n
+    (ley de potencias); devuelve ambas pendientes, R² y el n máximo con
+    colisiones.
+    """
+    from millstone.hypotheses.echo import _collisions
+
+    counts = [len(_collisions(lines, n)) for n in range(2, n_max + 1)]
+    n_last = next(
+        (i + 2 for i in range(len(counts) - 1, -1, -1) if counts[i] > 0), 1
+    )
+    xs = [i + 2 for i, c in enumerate(counts) if c > 0]
+    ys = [math.log(c) for c in counts if c > 0]
+    if len(xs) < 3:
+        return None
+
+    def fit(xv):
+        mx, my = sum(xv) / len(xv), sum(ys) / len(ys)
+        b = sum((x - mx) * (y - my) for x, y in zip(xv, ys)) / max(
+            sum((x - mx) ** 2 for x in xv), 1e-9
+        )
+        a = my - b * mx
+        ss = sum((y - a - b * x) ** 2 for x, y in zip(xv, ys))
+        tot = sum((y - my) ** 2 for y in ys)
+        return b, 1 - ss / max(tot, 1e-9)
+
+    b_exp, r2_exp = fit(xs)
+    b_pow, r2_pow = fit([math.log(x) for x in xs])
+    return {
+        "n_last": n_last,
+        "slope_exp": b_exp,
+        "slope_pow": -b_pow,
+        "r2_exp": r2_exp,
+        "r2_pow": r2_pow,
+    }
+
+
+_VOWELS = frozenset("aeiouəõũäëïöü")
+
+
+def phonotactic(seqs) -> dict:
+    """Ancla externa sin semántica: ¿el stream alterna como una lengua?
+
+    `vowel`: fracción de símbolos vocálicos. `cv_alt`: fracción de pares
+    adyacentes que alternan vocal/consonante. Las lenguas tienen
+    alternancia alta (~0,6-0,8); streams sin silabización, baja.
+    Un token es vocal si todos sus caracteres son vocales.
+    """
+    v = alt = pairs = n = 0
+    for s in seqs:
+        toks = list(s)
+        n += len(toks)
+        v += sum(1 for t in toks if t and set(t.lower()) <= _VOWELS)
+        for a, b in zip(toks, toks[1:]):
+            va = a and set(a.lower()) <= _VOWELS
+            vb = b and set(b.lower()) <= _VOWELS
+            pairs += 1
+            alt += va != vb
+    return {
+        "vowel": v / max(n, 1),
+        "cv_alt": alt / max(pairs, 1),
+    }
+
+
 def first_symbol_enrichment(firsts, marginal, min_n: int = 10):
     """Max enriquecimiento del primer símbolo de unidad vs marginal."""
     tot_f, tot_m = sum(firsts.values()), sum(marginal.values())
