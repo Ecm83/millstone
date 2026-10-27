@@ -140,6 +140,9 @@ def main(argv=None) -> int:
         "--nulls", type=int, default=0, metavar="N",
         help="N relabelings aleatorios del mismo mapa: nulo para la firma",
     )
+    cp = sub.add_parser("compare", help="compara dos transcripciones del mismo corpus")
+    cp.add_argument("other", help="segundo fichero de corpus (mismo formato)")
+    cp.add_argument("--level", default="word")
 
     args = p.parse_args(argv)
     original = load(args.corpus, args.format)
@@ -303,6 +306,29 @@ def main(argv=None) -> int:
             for e in h.evaluate(corpus):
                 mark = {True: "SOPORTA", False: "REFUTA", None: "?"}[e.supported]
                 print(f"  [{mark:>7}] {e.prediction}\n            {e.detail}")
+        return 0
+
+    if args.cmd == "compare":
+        from millstone.engine.transcription import compare
+
+        rep = compare(corpus, load(args.other, args.format), args.level)
+        print(
+            f"{rep.paired} pares ({args.level}) | idénticas "
+            f"{rep.identical} ({rep.agreement:.1%}) | "
+            f"estructurales {rep.structural} | "
+            f"solo-A {rep.only_a}, solo-B {rep.only_b}"
+        )
+        if rep.confusion:
+            print("confusiones glifo->glifo:")
+            for (a, b), n in rep.confusion.most_common(12):
+                print(f"  {a}->{b}: {n}")
+        worst = sorted(
+            rep.by_folio.items(),
+            key=lambda kv: kv[1][0] / max(kv[1][1], 1),
+        )[:10]
+        print("unidades con más desacuerdo:")
+        for f, (same, tot) in worst:
+            print(f"  {f}: {same}/{tot} idénticas")
         return 0
 
     return 1

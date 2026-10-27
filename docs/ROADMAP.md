@@ -108,7 +108,10 @@ producto**, no un paso más hacia el Voynich.
 - [x] `?` (lecturas inciertas) excluible vía `data/maps/drop-uncertain.map`:
       firma intacta salvo eco (z3 22,8→16,3) y base exacta (263→245) —
       los glifos dudosos inflaban ecos y ~18 reglas
-- [ ] `TranscriptionComparison` formal con more granularidad de locus
+- [x] `TranscriptionComparison` formal a nivel palabra (engine/transcription,
+      CLI `compare`): ZL↔Takahashi 74,3% idénticas, confusión top a↔o,
+      desacuerdo concentrado en f72; transcription-robust añade evidencia
+      a granularidad palabra
 - [ ] FSA/slot grammar exportado a Neo4j como grafo navegable
 
 ## Lógica del orden
