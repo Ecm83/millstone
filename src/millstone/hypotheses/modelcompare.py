@@ -33,6 +33,7 @@ from millstone.engine.generative import (
     CatalogModel,
     CombinatorialModel,
     LinguisticModel,
+    NGramModel,
     _edit1,
     score,
 )
@@ -107,6 +108,7 @@ class ModelCompare:
             CatalogModel(fsa),
             CombinatorialModel(fsa),
             AutociteModel(fsa),
+            NGramModel(fsa),
         ]
         for m in models:
             m.fit(train)

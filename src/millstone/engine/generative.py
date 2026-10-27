@@ -229,6 +229,100 @@ class CombinatorialModel(GenerativeModel):
         return out
 
 
+class NGramModel(GenerativeModel):
+    """E: trigrama de palabras con descuento absoluto y continuación KN.
+
+    El rival "ML" honesto: memoria variable — el backoff usa contexto
+    largo donde hay datos y corto donde no. Compite en DL contra los
+    cuatro mecanismos simbólicos en igualdad de condiciones.
+    """
+
+    name = "E-ngrama3"
+
+    def __init__(self, fsa: RegularGrammar, order: int = 3, d: float = 0.75):
+        self.fsa = fsa
+        self.order = order
+        self.d = d  # descuento absoluto
+
+    def fit(self, lines):
+        from collections import defaultdict
+
+        self.uni = Counter(w for l in lines for w in l)
+        self.n_tok = sum(self.uni.values())
+        self.v = len(self.uni)
+        self.lens_list = [len(l) for l in lines]
+        self.ctx = defaultdict(Counter)   # contexto -> siguiente
+        self.cont = defaultdict(set)      # palabra -> continuadores (KN)
+        self.n1ctx = defaultdict(set)     # palabra -> contextos previos
+        for l in lines:
+            seq = list(l) + [None]
+            for i, w in enumerate(seq):
+                h = tuple(seq[max(0, i - self.order + 1):i])
+                for k in range(1, min(self.order, i + 1)):
+                    c = tuple(seq[i - k:i])
+                    self.ctx[c][w] += 1
+                if w is not None:
+                    for k in range(1, min(self.order, i + 1)):
+                        self.cont[tuple(seq[i - k:i])].add(w)
+                    if i:
+                        self.n1ctx[w].add(seq[i - 1])
+        self.n_cont = sum(len(s) for s in self.cont.values())
+        return self
+
+    def _p(self, w, hist):
+        # KN-lite: P = max(c-d,0)/N + gamma * P_continuacion(w)
+        p = 0.0
+        for k in range(min(self.order - 1, len(hist)), -1, -1):
+            c = hist[-k:] if k else ()
+            cnt = self.ctx.get(c)
+            if not cnt:
+                continue
+            n = sum(cnt.values())
+            disc = max(cnt.get(w, 0) - self.d, 0) / n
+            gamma = self.d * len(cnt) / n
+            if k:
+                low = len(self.n1ctx.get(w, ())) / max(len(self.uni), 1)
+            else:
+                low = (self.uni.get(w, 0) + 1) / (self.n_tok + self.v + 1)
+            p = disc + gamma * low
+            if p > 0:
+                break
+        return max(p, P_UNSEEN)
+
+    def model_bits(self):
+        lex = sum(-math.log2(max(fsa_prob(self.fsa, w), 1e-12))
+                  for w in self.uni)
+        trans = sum(len(c) for c in self.ctx.values())
+        return lex + _bic(trans + self.v, self.n_tok)
+
+    def data_bits(self, lines):
+        bits = 0.0
+        for l in lines:
+            seq = list(l) + [None]
+            for i, w in enumerate(seq):
+                bits += -math.log2(self._p(w, tuple(seq[max(0, i - self.order + 1):i])))
+        return bits
+
+    def sample_lines(self, rng, n):
+        types = list(self.uni)
+        wts = [self.uni[w] for w in types]
+        out = []
+        for L in rng.choices(self.lens_list, k=n):
+            line = []
+            for _ in range(L):
+                hist = tuple(line[-(self.order - 1):])
+                cand = self.ctx.get(hist)
+                if cand:
+                    items = [x for x in cand.items() if x[0] is not None]
+                    if items:
+                        line.append(rng.choices([w for w, _ in items],
+                                                weights=[c for _, c in items])[0])
+                        continue
+                line.append(rng.choices(types, weights=wts)[0])
+            out.append(tuple(line))
+        return out
+
+
 class AutociteModel(GenerativeModel):
     """D: autocita - copia una palabra reciente (ventana K) y la muta a
     1 edicion con probabilidad p_mut, si no, sorteo del lexico.
