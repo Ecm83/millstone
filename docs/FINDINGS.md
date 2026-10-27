@@ -44,6 +44,10 @@ producto de millstone.
   eco baja (22,8→17,7) y la base exacta cae 263→187 — ~76 reglas
   "exactas" apoyaban en lecturas en disputa. La transcripción es un
   cuarto de ruido potencial; la clase no depende de él.
+- Blindaje total: las 16 hipótesis replican su veredicto sobre el
+  consenso (`--consensus-with`): timm 99,6%, familias 74,9% (sube),
+  replicación 42/42, eco z>7, flow-across-lines refutado igual. Nada de
+  lo medido era ruido de lectura.
 - Al comparar padre/hijo (proto-cuneiforme vs proto-elamita), la firma
   mide evolución de sistemas: el hijo rigidiza la dualidad
   ideograma/numeral del padre (mezcla interna 4,8% vs 17,5%).

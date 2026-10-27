@@ -118,6 +118,11 @@ def main(argv=None) -> int:
         "--map", dest="mapfile", metavar="FILE",
         help="mapeo unidad→fonema: re-codifica el corpus antes de correr",
     )
+    p.add_argument(
+        "--consensus-with", dest="consensus", metavar="FILE",
+        help="segunda transcripción: corre sobre el subcorpus donde ambas "
+             "coinciden (núcleo robusto a prueba de lectura)",
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("stats")
@@ -163,6 +168,10 @@ def main(argv=None) -> int:
         mapping = remap.parse_map(args.mapfile)
         remapped = remap.apply_map(corpus, mapping)
         corpus = remapped.corpus
+    if args.consensus:
+        from millstone.engine.transcription import consensus
+
+        corpus = consensus(corpus, load(args.consensus, args.format))
     view = MemoryCorpusView(corpus)
 
     if args.cmd == "stats":
