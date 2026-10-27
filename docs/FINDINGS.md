@@ -16,6 +16,7 @@
 | **Proto-Elamita** | dual M/N + hapax 82,7% + sin eco | **contabilidad palacial** |
 | **Rongorongo** | ecos verbatim n≤9 + fórmulas cross-tablilla | **texto con refranes** |
 | **Cuneiforme (sux)** | hapax 60,6% + fórmulas legales masivas | **lengua natural administrativa** |
+| **Copiale cifrado** | eco letra-línea +47, sin palabras | **cifrado real (control)** |
 | Culpeper | funcionales + vocabulario abierto | lengua natural |
 | Sintético | gramática recuperada exacta | oráculo |
 
@@ -44,6 +45,10 @@ producto de millstone.
   eco baja (22,8→17,7) y la base exacta cae 263→187 — ~76 reglas
   "exactas" apoyaban en lecturas en disputa. La transcripción es un
   cuarto de ruido potencial; la clase no depende de él.
+- El cifrado real no firma como el Voynich: Copiale a nivel letra tiene
+  eco_z3 **+47** (la homofonía filtra los n-gramas del plaintext); el
+  Voynich tiene **−189** (supresión de colisiones). Signo opuesto —
+  dato contra toda lectura "Voynich = texto natural sustituido".
 - Blindaje total: las 16 hipótesis replican su veredicto sobre el
   consenso (`--consensus-with`): timm 99,6%, familias 74,9% (sube),
   replicación 42/42, eco z>7, flow-across-lines refutado igual. Nada de

@@ -82,6 +82,14 @@ def load(path: str, fmt: str):
         from millstone.ingest import cuneiform
 
         return cuneiform.parse_file(path)
+    if fmt == "copiale":
+        from millstone.ingest import copiale
+
+        return copiale.parse_cipher(path)
+    if fmt == "copiale-de":
+        from millstone.ingest import copiale
+
+        return copiale.parse_plain(path)
     return plaintext.parse_file(path)
 
 
@@ -111,7 +119,8 @@ def main(argv=None) -> int:
     p.add_argument("corpus", help="fichero de corpus (IVTFF o texto plano)")
     p.add_argument(
         "--format",
-        choices=["ivtff", "plaintext", "protoelam", "rongorongo", "cuneiform"],
+        choices=["ivtff", "plaintext", "protoelam", "rongorongo",
+                 "cuneiform", "copiale", "copiale-de"],
         default="ivtff",
     )
     p.add_argument(
@@ -156,6 +165,9 @@ def main(argv=None) -> int:
     pu.add_argument("--bolt", default="bolt://localhost:7687")
     pu.add_argument("--no-grammar", action="store_true",
                     help="solo el árbol de corpus")
+    b = sub.add_parser("battery", help="vector de firma pre-registrado")
+    b.add_argument("--group", help="nivel agrupador (p.ej. line)")
+    b.add_argument("--unit", help="nivel unidad/token (p.ej. word)")
 
     args = p.parse_args(argv)
     original = load(args.corpus, args.format)
@@ -404,6 +416,31 @@ def main(argv=None) -> int:
                 print(f"FSA: {ns} estados, {nt} transiciones")
         finally:
             driver.close()
+        return 0
+
+    if args.cmd == "battery":
+        from millstone.engine.battery import run_battery
+
+        group = args.group or (
+            corpus.schema.parent_level("word")
+            if "word" in corpus.schema.levels
+            else corpus.schema.levels[1]
+        )
+        seqs = (
+            view.unit_sequences(group, args.unit)
+            if args.unit
+            else view.sequences(group)
+        )
+        lines = [list(s.symbols) for s in seqs if s.symbols]
+        vec = run_battery(lines)
+        if vec is None:
+            print("batería: N insuficiente")
+        else:
+            for k, v in vec.items():
+                if k == "hash":
+                    continue
+                print(f"  {k:>10}: {v:.4g}")
+            print(f"  {'hash':>10}: {vec['hash']}")
         return 0
 
     return 1
