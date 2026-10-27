@@ -38,6 +38,12 @@ producto de millstone.
   (E=16,8%, C=12,9% — la tradición paralela/calendario) de texto
   corrido (A=3,1%). Cuidado: los glifos rotos `_` fabrican ecos
   falsos; hay que excluirlos.
+- El núcleo robusto sostiene la clase: filtrado al 74,3% de palabras en
+  las que ZL y Takahashi coinciden (`compare --signature`), la firma del
+  Voynich se mantiene (timm 0,984, orden libre 0,93, familias 13,4); el
+  eco baja (22,8→17,7) y la base exacta cae 263→187 — ~76 reglas
+  "exactas" apoyaban en lecturas en disputa. La transcripción es un
+  cuarto de ruido potencial; la clase no depende de él.
 - Al comparar padre/hijo (proto-cuneiforme vs proto-elamita), la firma
   mide evolución de sistemas: el hijo rigidiza la dualidad
   ideograma/numeral del padre (mezcla interna 4,8% vs 17,5%).

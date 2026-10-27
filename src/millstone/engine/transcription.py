@@ -18,7 +18,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
 from millstone.engine.view import MemoryCorpusView
-from millstone.model import Corpus
+from millstone.model import Corpus, subcorpus
 
 
 @dataclass(frozen=True)
@@ -82,3 +82,30 @@ def compare(corpus_a: Corpus, corpus_b: Corpus, level: str = "word") -> Transcri
         confusion=confusion,
         by_folio={k: (v[0], v[1]) for k, v in folio.items()},
     )
+
+
+def identical_loci(corpus_a: Corpus, corpus_b: Corpus, level: str = "word") -> set:
+    """Loci donde ambas transcripciones leyeron exactamente lo mismo."""
+    sa = {
+        s.locus: s.symbols
+        for s in MemoryCorpusView(corpus_a).sequences(level)
+        if s.locus
+    }
+    sb = {
+        s.locus: s.symbols
+        for s in MemoryCorpusView(corpus_b).sequences(level)
+        if s.locus
+    }
+    return {loc for loc in sa.keys() & sb.keys() if sa[loc] == sb[loc]}
+
+
+def consensus(corpus_a: Corpus, corpus_b: Corpus, level: str = "word") -> Corpus:
+    """El núcleo robusto: solo las unidades en las que A y B coinciden.
+
+    Si ZL y Takahashi difieren en ~26% de las palabras, cada medida sobre
+    una sola transcripción vive sobre un cuarto de ruido potencial. El
+    subcorpus consenso es el suelo donde ambos coinciden — la versión a
+    prueba de transcripción del corpus.
+    """
+    keep = identical_loci(corpus_a, corpus_b, level)
+    return subcorpus(corpus_a, level, lambda n: n.locus in keep)

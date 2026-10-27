@@ -143,6 +143,10 @@ def main(argv=None) -> int:
     cp = sub.add_parser("compare", help="compara dos transcripciones del mismo corpus")
     cp.add_argument("other", help="segundo fichero de corpus (mismo formato)")
     cp.add_argument("--level", default="word")
+    cp.add_argument(
+        "--signature", action="store_true",
+        help="batería + base de reglas sobre el subcorpus consenso",
+    )
     pu = sub.add_parser("push", help="vuelca corpus + FSA a Neo4j (bolt)")
     pu.add_argument("--bolt", default="bolt://localhost:7687")
     pu.add_argument("--no-grammar", action="store_true",
@@ -315,7 +319,8 @@ def main(argv=None) -> int:
     if args.cmd == "compare":
         from millstone.engine.transcription import compare
 
-        rep = compare(corpus, load(args.other, args.format), args.level)
+        other_corpus = load(args.other, args.format)
+        rep = compare(corpus, other_corpus, args.level)
         print(
             f"{rep.paired} pares ({args.level}) | idénticas "
             f"{rep.identical} ({rep.agreement:.1%}) | "
@@ -333,6 +338,40 @@ def main(argv=None) -> int:
         print("unidades con más desacuerdo:")
         for f, (same, tot) in worst:
             print(f"  {f}: {same}/{tot} idénticas")
+
+        if args.signature:
+            from millstone.engine.battery import run_battery
+            from millstone.engine.transcription import consensus
+
+            cons = consensus(corpus, other_corpus, args.level)
+            group = corpus.schema.parent_level(args.level) or args.level
+
+            def wlines(c):
+                v = MemoryCorpusView(c)
+                return [
+                    list(s.symbols)
+                    for s in v.unit_sequences(group, args.level)
+                    if s.symbols
+                ]
+
+            for label, c in (("completo", corpus), ("consenso", cons)):
+                v = MemoryCorpusView(c)
+                ws = [w for l in wlines(c) for w in l]
+                ds = discover(v, args.level)
+                basis = prune(v, args.level, ds)
+                vec = run_battery(wlines(c))
+                print(
+                    f"-- {label}: {len(ws)} unidades ({len(set(ws))} tipos) | "
+                    f"candidatas {len(ds)}, base exacta {len(basis.basis)}"
+                )
+                if vec is None:
+                    print("   batería: N insuficiente")
+                else:
+                    print("   " + "  ".join(
+                        f"{k}={vec[k]:.3g}"
+                        for k in ("hapax", "heaps_beta", "timm", "families",
+                                  "outdeg", "echo_z3")
+                    ))
         return 0
 
     if args.cmd == "push":
