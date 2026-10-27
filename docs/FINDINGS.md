@@ -18,6 +18,7 @@
 | **Cuneiforme (sux)** | hapax 60,6% + fórmulas legales masivas | **lengua natural administrativa** |
 | **Copiale cifrado** | eco letra-línea +47, sin palabras | **cifrado real (control)** |
 | **Lingua Ignota** | sufijos categóricos + fam 10% | **nomenclátor construido** |
+| **Letanía latina** | cola eco n≤6, z saturado (−6) | **refrán litúrgico** |
 | Culpeper | funcionales + vocabulario abierto | lengua natural |
 | Sintético | gramática recuperada exacta | oráculo |
 

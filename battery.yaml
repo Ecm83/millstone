@@ -37,6 +37,6 @@ controles:
   naturales: [culpeper, copiale-de]
   administrativos: [cuneiform, indus, lineara, protoelam]
   cifrados: [copiale]
-  refranes: [rongorongo]
+  refranes: [rongorongo, litany]
   negativos_sinteticos: [shuffled, markov1, markov2, markov3, markov4,
                          autocite, codebook]
