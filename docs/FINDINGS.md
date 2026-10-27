@@ -96,3 +96,20 @@ Vector a N=10k con nulos intra-línea — el panel ya es vectorial:
 El Voynich cae entre administrativo y codebook en eco (24 vs 12 vs
 128), orden libre como todo lo no-sintáctico, y seña propia en
 familias/hapax. Ningún control lo clona — firma única, no copia.
+
+## Frontera medición / interpretación
+
+El panel mide **posición vectorial** en ~5 dimensiones; las etiquetas de
+clase ("inventario", "refranes", "contabilidad") son **interpretación**
+de esa posición, no salida del instrumento. Igualmente, "catálogo +
+autocita" es la lectura que mejor encaja la descomposición de
+`model-compare` — una hipótesis apoyada, no un resultado directo del
+vector. Las clases minoritarias siguen de un miembro: la posición está
+medida, el vecindario está calibrado, la etiqueta es nuestra.
+
+- Eco no es memoria corta: markov de orden 1-4 produce echo_z3 ≈ 0
+  (0,7 / −0,1 / 2,4 / −0,8) vs Voynich 20 — ninguna memoria markoviana
+  genera eco de palabras; la repetición es estructura, no proceso.
+- El eco es 100% léxico: recodificar el propio Voynich a entradas
+  opacas (biyección tipo→tipo) deja echo_z3=18,3 ≈ 20 — las colisiones
+  son de tipos, no de posiciones.
