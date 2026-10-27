@@ -5,6 +5,7 @@ from millstone.store.graph import (
     edge_rows,
     node_rows,
     record_constraint,
+    record_grammar,
     record_hypothesis,
     write,
 )
@@ -85,6 +86,26 @@ def test_record_constraint_links_violations():
     queries = [q for q, _ in drv.session_obj.calls]
     assert any("Constraint" in q for q in queries)
     assert any("VIOLATED_AT" in q and "Word" in q for q in queries)
+
+
+def test_record_grammar_links_states():
+    from millstone.ingest.synthetic import RegularGrammar, Transition
+
+    g = RegularGrammar(
+        start="^",
+        finals=frozenset({"o"}),
+        transitions=(
+            Transition(src="^", symbol="q", dst="q", weight=10),
+            Transition(src="q", symbol="o", dst="o", weight=5),
+        ),
+    )
+    drv = FakeDriver()
+    ns, nt = record_grammar(drv, g, name="g")
+    assert ns == 3 and nt == 2  # ^, q, o
+    queries = [q for q, _ in drv.session_obj.calls]
+    assert any("FSAState" in q for q in queries)
+    assert any("HAS_STATE" in q for q in queries)
+    assert any("TRANS" in q for q in queries)
 
 
 def test_record_hypothesis_links_evidence():

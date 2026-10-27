@@ -108,6 +108,60 @@ def record_constraint(driver, result: CheckResult) -> None:
         )
 
 
+def record_grammar(driver, grammar, name: str = "fsa") -> tuple[int, int]:
+    """FSA/slot grammar como grafo navegable.
+
+    (:Grammar {name})-[:HAS_STATE]->(:FSAState)-[:TRANS {symbol,weight}]
+    ->(:FSAState). Los estados posicionales `(pos, símbolo)` son el
+    modelo de slots: lo permitido depende de dónde estás en la palabra.
+    Devuelve (n_estados, n_transiciones).
+    """
+    def sid(st) -> str:
+        return (
+            f"{name}:{st[0]}:{st[1]}" if isinstance(st, tuple)
+            else f"{name}:{st}"
+        )
+
+    states = {grammar.start} | set(grammar.finals)
+    trans_rows = []
+    for t in grammar.transitions:
+        states.add(t.src)
+        states.add(t.dst)
+        trans_rows.append(
+            {"src": sid(t.src), "dst": sid(t.dst),
+             "symbol": t.symbol, "weight": t.weight}
+        )
+    state_rows = [
+        {
+            "id": sid(st),
+            "pos": st[0] if isinstance(st, tuple) else None,
+            "symbol": st[1] if isinstance(st, tuple) else st,
+            "final": st in grammar.finals,
+            "start": st == grammar.start,
+        }
+        for st in states
+    ]
+    with driver.session() as s:
+        s.run("MERGE (g:Grammar {name: $n})", n=name)
+        s.run(
+            "UNWIND $rows AS r MERGE (st:FSAState {id: r.id}) "
+            "SET st.pos=r.pos, st.symbol=r.symbol, st.final=r.final, "
+            "st.start=r.start, st.grammar=$g "
+            "WITH st MATCH (g:Grammar {name: $g}) "
+            "MERGE (g)-[:HAS_STATE]->(st)",
+            rows=state_rows,
+            g=name,
+        )
+        s.run(
+            "UNWIND $rows AS r "
+            "MATCH (a:FSAState {id: r.src}), (b:FSAState {id: r.dst}) "
+            "MERGE (a)-[t:TRANS {symbol: r.symbol}]->(b) "
+            "SET t.weight=r.weight",
+            rows=trans_rows,
+        )
+    return len(state_rows), len(trans_rows)
+
+
 def record_hypothesis(driver, name: str, statement: str, evidence) -> None:
     """(:Hypothesis) -[:SUPPORTS|:REFUTES|:NEUTRAL]-> (:Evidence).
 

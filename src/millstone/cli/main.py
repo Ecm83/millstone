@@ -143,6 +143,10 @@ def main(argv=None) -> int:
     cp = sub.add_parser("compare", help="compara dos transcripciones del mismo corpus")
     cp.add_argument("other", help="segundo fichero de corpus (mismo formato)")
     cp.add_argument("--level", default="word")
+    pu = sub.add_parser("push", help="vuelca corpus + FSA a Neo4j (bolt)")
+    pu.add_argument("--bolt", default="bolt://localhost:7687")
+    pu.add_argument("--no-grammar", action="store_true",
+                    help="solo el árbol de corpus")
 
     args = p.parse_args(argv)
     original = load(args.corpus, args.format)
@@ -329,6 +333,29 @@ def main(argv=None) -> int:
         print("unidades con más desacuerdo:")
         for f, (same, tot) in worst:
             print(f"  {f}: {same}/{tot} idénticas")
+        return 0
+
+    if args.cmd == "push":
+        try:
+            from neo4j import GraphDatabase
+        except ImportError:
+            raise SystemExit("pip install neo4j para usar push")
+        from millstone.store.graph import record_grammar, write
+
+        driver = GraphDatabase.driver(
+            args.bolt, auth=("neo4j", "millstone")
+        )
+        try:
+            n = write(driver, corpus)
+            print(f"{n} nodos del corpus en Neo4j")
+            if not args.no_grammar:
+                from millstone.engine.induce import induce
+
+                g = induce(view, "word", positional=True)
+                ns, nt = record_grammar(driver, g, name="fsa-slots")
+                print(f"FSA: {ns} estados, {nt} transiciones")
+        finally:
+            driver.close()
         return 0
 
     return 1

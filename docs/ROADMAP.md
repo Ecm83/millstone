@@ -112,7 +112,9 @@ producto**, no un paso más hacia el Voynich.
       CLI `compare`): ZL↔Takahashi 74,3% idénticas, confusión top a↔o,
       desacuerdo concentrado en f72; transcription-robust añade evidencia
       a granularidad palabra
-- [ ] FSA/slot grammar exportado a Neo4j como grafo navegable
+- [x] FSA/slot grammar en Neo4j (`record_grammar`, CLI `push`):
+      (:Grammar)-[:HAS_STATE]->(:FSAState)-[:TRANS{symbol,weight}]->;
+      Voynich = 339 estados / 1955 transiciones navegables
 
 ## Lógica del orden
 
