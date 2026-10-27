@@ -18,6 +18,7 @@ from millstone.model import Corpus
 
 class TranscriptionRobust:
     name = "transcription-robust"
+    needs_two = True  # evaluate(corpus, other): dos transcripciones
     statement = (
         "Las violaciones de una casi-regla coinciden en locus entre "
         "transcripciones independientes -> la frontera es del manuscrito."

@@ -45,6 +45,8 @@ from millstone.hypotheses.replication import (
 from millstone.hypotheses.drift import DriftProfile
 from millstone.hypotheses.echo import VerbatimEcho
 from millstone.hypotheses.modelcompare import ModelCompare
+from millstone.hypotheses.productive import ProductiveGrammar
+from millstone.hypotheses.transcription import TranscriptionRobust
 from millstone.ingest import ivtff, plaintext
 
 HYPOTHESES = {
@@ -64,6 +66,8 @@ HYPOTHESES = {
     "drift-profile": DriftProfile,
     "verbatim-echo": VerbatimEcho,
     "model-compare": ModelCompare,
+    "productive-grammar": ProductiveGrammar,
+    "transcription-robust": TranscriptionRobust,
 }
 
 
@@ -128,6 +132,11 @@ def main(argv=None) -> int:
         help="mapeo unidad→fonema: re-codifica el corpus antes de correr",
     )
     p.add_argument(
+        "--with", dest="with_", metavar="FILE",
+        help="segundo corpus para hipótesis que lo necesitan "
+             "(transcription-robust)",
+    )
+    p.add_argument(
         "--consensus-with", dest="consensus", metavar="FILE",
         help="segunda transcripción: corre sobre el subcorpus donde ambas "
              "coinciden (núcleo robusto a prueba de lectura)",
@@ -184,6 +193,7 @@ def main(argv=None) -> int:
         from millstone.engine.transcription import consensus
 
         corpus = consensus(corpus, load(args.consensus, args.format))
+    other2 = load(args.with_, args.format) if args.with_ else None
     view = MemoryCorpusView(corpus)
 
     if args.cmd == "stats":
@@ -225,8 +235,15 @@ def main(argv=None) -> int:
         names = [args.name] if args.name else sorted(HYPOTHESES)
         for name in names:
             h = HYPOTHESES[name]()
+            if getattr(h, "needs_two", False):
+                if other2 is None:
+                    print(f"== {h.name}: (requiere --with <segunda transcripción>)")
+                    continue
+                ev = h.evaluate(corpus, other2)
+            else:
+                ev = h.evaluate(corpus)
             print(f"== {h.name}: {h.statement}")
-            for e in h.evaluate(corpus):
+            for e in ev:
                 mark = {True: "SOPORTA", False: "REFUTA", None: "?"}[e.supported]
                 print(f"  [{mark:>7}] {e.prediction}\n            {e.detail}")
         return 0
@@ -235,8 +252,15 @@ def main(argv=None) -> int:
         lines = ["# Reporte millstone\n"]
         for name in sorted(HYPOTHESES):
             h = HYPOTHESES[name]()
+            if getattr(h, "needs_two", False) and other2 is None:
+                continue
             lines.append(f"## `{h.name}`\n\n> {h.statement}\n")
-            for e in h.evaluate(corpus):
+            ev = (
+                h.evaluate(corpus, other2)
+                if getattr(h, "needs_two", False)
+                else h.evaluate(corpus)
+            )
+            for e in ev:
                 mark = {True: "SOPORTA", False: "REFUTA", None: "—"}[e.supported]
                 lines.append(f"- **{mark}** {e.prediction}  \n  {e.detail}")
             lines.append("")
