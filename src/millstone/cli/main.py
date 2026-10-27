@@ -106,6 +106,7 @@ def parse_constraint(spec: str):
 
 
 def main(argv=None) -> int:
+    sys.stdout.reconfigure(errors="replace")
     p = argparse.ArgumentParser(prog="millstone")
     p.add_argument("corpus", help="fichero de corpus (IVTFF o texto plano)")
     p.add_argument(

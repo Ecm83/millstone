@@ -16,8 +16,11 @@ Dos ejes ortogonales:
    qué explicación se comporta como el sistema observado.
 
 Firmas fijadas a priori: hapax de tipos, colisiones verbatim n=2..4,
-cobertura FSA held-out. La deriva regional no la modela ninguno — si
-importa, es evidencia de un eje que los tres dejan sin explicar.
+familias a edición-1, masa de repeticiones intra-línea. La última
+evidencia descompone la firma: qué mecanismo se acerca más a cada
+métrica — si ninguno gana todas, la firma es una mezcla de mecanismos.
+La deriva regional no la modela ninguno — si importa, es evidencia de
+un eje que los cuatro dejan sin explicar.
 """
 
 from __future__ import annotations
@@ -30,6 +33,7 @@ from millstone.engine.generative import (
     CatalogModel,
     CombinatorialModel,
     LinguisticModel,
+    _edit1,
     score,
 )
 from millstone.engine.induce import induce
@@ -46,6 +50,27 @@ def _collide(lines, n):
     return sum(1 for s in grams.values() if len(s) > 1)
 
 
+def _fam(types) -> float:
+    """Fracción de tipos con un vecino a distancia de edición 1."""
+    types = list(types)
+    near = sum(
+        1
+        for i, w in enumerate(types)
+        if any(_edit1(w, o) for o in types[i + 1 : i + 60])
+    )
+    return near / max(len(types), 1)
+
+
+def _repmass(lines) -> float:
+    """Masa de tokens cuyo tipo aparece repetido dentro de la línea."""
+    rep = tot = 0
+    for l in lines:
+        c = Counter(l)
+        rep += sum(1 for t in l if c[t] > 1)
+        tot += len(l)
+    return rep / max(tot, 1)
+
+
 def _signature(lines) -> dict[str, float]:
     words = [w for l in lines for w in l]
     freq = Counter(words)
@@ -55,6 +80,8 @@ def _signature(lines) -> dict[str, float]:
         "coll2": _collide(lines, 2),
         "coll3": _collide(lines, 3),
         "coll4": _collide(lines, 4),
+        "fam": _fam(freq),
+        "repmass": _repmass(lines),
     }
 
 
@@ -160,7 +187,7 @@ class ModelCompare:
             rep.append((m.name, within, d))
         repro = [n for n, ok, _ in rep if ok]
         detail = " | ".join(
-            f"{n}: hapaxΔ={d['hapax']:.2f} coll2Δ={d['coll2']:.0f}"
+            f"{n}: hapax_err={d['hapax']:.2f} coll2_err={d['coll2']:.0f}"
             for n, _, d in rep
         )
         out.append(
@@ -175,6 +202,24 @@ class ModelCompare:
                 "el ganador DL también reproduce la firma",
                 bi.name in repro if repro else None,
                 f"ganador DL={bi.name}; reproducen={repro or 'ninguno'}",
+            )
+        )
+
+        # descomposición: qué mecanismo se acerca más en cada métrica
+        winners = {
+            k: min(sigs_i, key=lambda n: abs(sigs_i[n][k] - sig_i[k]))
+            for k in sig_i
+        }
+        attr = ", ".join(
+            f"{k}->{v.split('-')[0]}" for k, v in winners.items()
+        )
+        one = len(set(winners.values())) == 1
+        out.append(
+            Evidence(
+                "un único mecanismo explica todas las métricas de firma",
+                one,
+                f"atribución por métrica: {attr}"
+                + ("" if one else " — la firma se descompone entre mecanismos"),
             )
         )
         return out

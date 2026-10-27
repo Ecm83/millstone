@@ -364,3 +364,6 @@ def test_model_compare_on_voynich():
     assert "C-combinatorio" in ev[0].detail
     assert ev[1].supported is True
     assert ev[2].supported is False  # nadie reproduce la firma
+    # la firma se descompone: ningun mecanismo gana todas las metricas
+    assert ev[4].supported is False
+    assert "repmass->D" in ev[4].detail

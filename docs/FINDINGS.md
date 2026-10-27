@@ -42,8 +42,11 @@ producto de millstone.
   mide evolución de sistemas: el hijo rigidiza la dualidad
   ideograma/numeral del padre (mezcla interna 4,8% vs 17,5%).
 - model-compare: el DL elige la descripción más barata (C) pero la
-  autocita (D, copiar+mutar) reproduce mejor la firma — divergencia
-  DL-vs-comportamiento. "Léxico cerrado" caído: la razón FSA/tipos
+  autocita (D, copiar+mutar) reproduce mejor la firma. Divergencia
+  resuelta por descomposición: ningún mecanismo solo explica la firma —
+  coll2/coll4→B (suelo i.i.d. del léxico), hapax/coll3/repmass→D
+  (exceso de autocita). El Voynich es catálogo + autocita, no un
+  generador libre ni una lengua. "Léxico cerrado" caído: la razón FSA/tipos
   no discrimina (Culpeper sobre-genera 280× más); el rasgo real es
   crecimiento sub-lineal (Heaps β=0,66).
 
