@@ -31,7 +31,9 @@ _DELETE = "-"
 def parse_map(path: str | Path) -> dict[str, tuple[str, ...]]:
     """Lee un fichero de mapeo. Devuelve {fuente: (tokens,)}; () = borrar."""
     mapping: dict[str, tuple[str, ...]] = {}
-    for n, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+    for n, line in enumerate(
+        Path(path).read_text(encoding="utf-8-sig").splitlines(), 1
+    ):
         line = line.split("#", 1)[0].strip()
         if not line:
             continue
