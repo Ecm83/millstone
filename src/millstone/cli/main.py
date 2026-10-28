@@ -94,6 +94,10 @@ def load(path: str, fmt: str):
         from millstone.ingest import copiale
 
         return copiale.parse_plain(path)
+    if fmt == "fasta":
+        from millstone.ingest import fasta
+
+        return fasta.parse_file(path)
     return plaintext.parse_file(path)
 
 
@@ -124,7 +128,7 @@ def main(argv=None) -> int:
     p.add_argument(
         "--format",
         choices=["ivtff", "plaintext", "protoelam", "rongorongo",
-                 "cuneiform", "copiale", "copiale-de"],
+                 "cuneiform", "copiale", "copiale-de", "fasta"],
         default="ivtff",
     )
     p.add_argument(

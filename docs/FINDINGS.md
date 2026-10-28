@@ -19,6 +19,7 @@
 | **Copiale cifrado** | eco letra-línea +47, sin palabras | **cifrado real (control)** |
 | **Lingua Ignota** | sufijos categóricos + fam 10% | **nomenclátor construido** |
 | **Letanía latina** | cola eco n≤6, z saturado (−6) | **refrán litúrgico** |
+| **HIV-1 (ADN)** | CpG suprimido (C→G 6,6%), 0 reglas exactas | **secuencia biológica** |
 | Culpeper | funcionales + vocabulario abierto | lengua natural |
 | Sintético | gramática recuperada exacta | oráculo |
 
@@ -47,6 +48,10 @@ producto de millstone.
   eco baja (22,8→17,7) y la base exacta cae 263→187 — ~76 reglas
   "exactas" apoyaban en lecturas en disputa. La transcripción es un
   cuarto de ruido potencial; la clase no depende de él.
+- Agnosticidad demostrada: sobre el genoma HIV-1 (9.181 bases) el
+  motor encuentra la supresión CpG real (C→G en 6,6% vs ~25% esperado)
+  sin saber nada de biología, y emite 0 reglas exactas — el ADN es
+  estocástico, no plantillado. Dominio no-lingüístico funcionando.
 - Geometría del eco (`echo_decay_profile`): el Voynich es el único
   cliff del panel — colisiones mueren en n=4 (slope −3,89, r²=,97)
   mientras todo lo demás tiene cola hasta n=9-10 (Culpeper −0,76,

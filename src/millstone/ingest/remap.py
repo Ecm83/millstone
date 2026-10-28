@@ -13,7 +13,9 @@ Formato del fichero de mapeo — una entrada por línea:
 
 `#` comenta. La fuente se casa contra la concatenación de hojas de cada
 secuencia, con preferencia por la clave más larga (los bancos EVA como
-`cth` ganan a `c`). Las unidades sin entrada pasan intactas y se cuentan
+`cth` ganan a `c`). `^x` ancla la clave al inicio de la unidad y `x$`
+al final (asignaciones posicionales, p.ej. `m$` solo cerrando palabra).
+Las unidades sin entrada pasan intactas y se cuentan
 en la cobertura que devuelve `apply_map`.
 """
 
@@ -50,20 +52,32 @@ def parse_map(path: str | Path) -> dict[str, tuple[str, ...]]:
 
 
 def _segment(symbols: tuple[str, ...], keys: list[str]) -> list[str]:
-    """Maximal-munch: claves casadas u hojas sueltas, en orden."""
+    """Maximal-munch: claves casadas u hojas sueltas, en orden.
+
+    Una clave puede anclarse: `^x` solo casa al inicio de la secuencia
+    y `x$` solo al final — asignaciones posicionales de la literatura
+    (p.ej. `m$` = valor distinto cerrando palabra). Las ancladas se
+    prueban antes que la misma clave sin ancla.
+    """
     out: list[str] = []
     i, n = 0, len(symbols)
     while i < n:
         hit = None
         for k in keys:
-            if len(symbols[i]) > len(k):
+            core = k.strip("^$")
+            m = len(core)
+            if len(symbols[i]) > m:
                 continue
             acc = ""
             for j in range(i, n):
                 acc += symbols[j]
-                if len(acc) > len(k):
+                if len(acc) > m:
                     break
-                if acc == k:
+                if acc == core:
+                    if (k.startswith("^") and i != 0) or (
+                        k.endswith("$") and j + 1 != n
+                    ):
+                        break
                     hit = k
                     i = j + 1
                     break
@@ -101,7 +115,11 @@ def apply_map(
     secuencia de hojas (palabra). Una unidad mapeada a `()` desaparece.
     """
     leaf = corpus.schema.leaf_level
-    keys = sorted(mapping, key=len, reverse=True)
+    keys = sorted(
+        mapping,
+        key=lambda k: (len(k.strip("^$")), "^" in k or "$" in k),
+        reverse=True,
+    )
     unmapped: Counter = Counter()
     total = 0
 
