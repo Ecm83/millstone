@@ -47,15 +47,17 @@ el contrato:
 millstone/
 ├── model.py     modelo de corpus genérico (schema de niveles + nodos)
 ├── ingest/      adaptadores de fuente → modelo: ivtff (Voynich),
-│                plaintext, synthetic, render (re-codificación),
-│                indus (ICIT), lineara (GORILA), protoelam (CDLI),
-│                rongorongo (Barthel), cuneiform (CDLI, sux+qpc).
-│                Sin dependencias de grafo
+│                plaintext, synthetic, render + remap (re-codificación
+│                y testbed de descifrado), indus (ICIT), lineara
+│                (GORILA), protoelam (CDLI), rongorongo (Barthel),
+│                cuneiform (CDLI), copiale (cifrado + alemán descifrado)
 ├── store/       modelo → Neo4j (almacén + exploración visual; NO razona)
 ├── engine/      motor: view, constraints (8 tipos), check, discover
-│                (Pareto), mdl, frontier, induce, glyphs (nivel glifo)
+│                (Pareto), mdl, frontier, induce, glyphs, metrics,
+│                battery (firma pre-registrada), generative (5 modelos),
+│                transcription (comparación ZL↔TT + consenso)
 │                opera sobre CorpusView (interfaz abstracta; Neo4j o RAM)
-├── hypotheses/  17 hipótesis evaluadas: predicciones, refutaciones,
+├── hypotheses/  18 hipótesis evaluadas: predicciones, refutaciones,
 │                geometrías de frontera — todas con evidencia enlazada
 └── cli/         punto de entrada que conecta todo
 ```
@@ -66,22 +68,31 @@ intercambiable.
 
 ## Estado
 
-Funcional end-to-end y calibrado sobre **nueve corpus** (ver
+Funcional end-to-end y calibrado sobre **11 corpus** (ver
 `docs/corpora/` y `docs/FINDINGS.md` para los hallazgos medidos;
 `docs/PAPER.md` para la nota informal):
 
 | Corpus | Firma detectada | Veredicto |
 |---|---|---|
 | **Voynich** (ZL + Takahashi) | plantilla intra-palabra + orden libre + léxico cerrado | inventario combinatorio |
-| **Indo** (ICIT/Mahadevan) | marcadores posicionales (jar final 66%) + núcleos 84% hapax | sello administrativo |
+| **Indo** (ICIT/Mahadevan) | marcadores posicionales + núcleos 84% hapax | sello administrativo |
 | **Lineal A** (GORILA/SigLA) | 40% tokens numéricos + 90% hapax | contabilidad palacial |
+| **Proto-Elamita** (CDLI) | reglas vacuas vs alfabetos abiertos | inventario/rorro oscuro |
+| **Rongorongo** (Barthel) | ecos n≤9 entre líneas consecutivas | texto con refranes |
+| **Cuneiforme** (sux, CDLI) | hapax 60% + fórmulas legales | lengua administrativa |
+| **Copiale** | eco letra-línea +47 (signo opuesto al Voynich) | cifrado real (control) |
 | **Culpeper 1653** | funcionales dominantes, vocabulario abierto | lengua natural ✓ |
+| **Lingua Ignota** (Hildegard) | sufijos categóricos + fam 10% | nomenclátor construido |
+| **Letanía latina** | cola de eco n≤6 | refrán litúrgico |
 | **Sintético** | gramática recuperada exacta | oráculo ✓ |
 
 CLI: `python -m millstone <corpus> stats|discover|check|frontier|
-hypothesize|report|testbed`. `report` regenera los veredictos en
-markdown. `--map <fichero>` re-codifica el corpus con un candidato de
-descifrado (unidad→fonema, maximal-munch; ver `data/maps/`) antes de
-cualquier comando; `testbed` compara la firma original vs descifrada.
-Neo4j opcional: `docker compose up -d` → grafo navegable con
-`Constraint→Word` e `Hypothesis→Evidence`.
+hypothesize|report|testbed|compare|battery|push`. Opciones globales:
+`--map FILE` (descifrado candidato antes de cualquier comando),
+`--consensus-with FILE` (núcleo robusto de dos transcripciones),
+`--with FILE` (segundo corpus p. ej. para `transcription-robust`),
+`--format` (ivtff, plaintext, protoelam, rongorongo, cuneiform,
+copiale, copiale-de). `testbed` compara la firma original vs
+descifrada incl. nulos `--nulls N`; `battery` da el vector de firma;
+`compare` mide el acuerdo entre transcripciones. Neo4j opcional:
+`docker compose up -d` + `push` → grafo con FSA navegable.
