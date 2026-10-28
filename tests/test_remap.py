@@ -72,6 +72,19 @@ def test_apply_map_unmapped_counter():
     assert res.coverage == 0.5
 
 
+def test_anchors_start_end():
+    from millstone.ingest.remap import _segment
+
+    keys = sorted(
+        {"m$": ("r",), "m": ("x",), "^q": ("Q",)},
+        key=lambda k: (len(k.strip("^$")), "^" in k or "$" in k),
+        reverse=True,
+    )
+    # m anclada gana en final, m suelta en medio, q solo al inicio
+    assert _segment(tuple("qmm"), keys) == ["^q", "m", "m$"]
+    assert _segment(tuple("aqm"), keys) == ["a", "q", "m$"]
+
+
 def test_apply_map_structure_preserved():
     res = apply_map(_corpus(["ab"]), {"a": ("t",)})
     assert res.corpus.validate() == []
