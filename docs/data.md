@@ -20,6 +20,13 @@ obtenerlo. Todo lo medido es reproducible una vez bajados.
 | `litany.txt` | Letanía latina | la.wikisource.org/wiki/Litaniae_Sanctorum |
 | `hiv1.fasta` | Genoma HIV-1 | NCBI eutils — descargado (ver abajo) |
 
+## Descarga automatizada
+
+```powershell
+scripts/fetch_data.ps1   # baja copiale, hiv1, litany, linguaignota
+scripts/reproduce.ps1    # stats + battery de todos los corpus en out/
+```
+
 ## Comandos verificados (PowerShell)
 
 ```powershell
