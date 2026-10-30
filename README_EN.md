@@ -15,6 +15,8 @@ undeciphered closed corpus in the world. But the engine knows nothing
 about Voynich: it works identically on Latin, English phonemes, or a
 synthetic grammar.
 
+Plain-language intro: [`docs/INTRO.md`](docs/INTRO.md).
+
 ## How to cite
 
 Castelló March, E. (2026). *millstone: a deterministic symbolic engine

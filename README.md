@@ -77,6 +77,8 @@ Regla de oro: **desacoplado ≠ distribuido**. Un repo, módulos con fronteras
 claras. `engine` funciona sobre un corpus en memoria en tests — Neo4j es
 intercambiable.
 
+Introducción divulgativa: [`docs/INTRO.md`](docs/INTRO.md) (EN).
+
 ## Estado
 
 Funcional end-to-end y calibrado sobre **11 corpus** (ver
