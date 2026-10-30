@@ -5,8 +5,9 @@ authors:
   - family-names: "Castelló March"
     given-names: Enric
 title: "millstone: a deterministic symbolic engine for grammatical characterization of closed corpora"
-version: 0.1.0
+version: 0.1.1
 date-released: 2026-10-30
+doi: "10.5281/zenodo.23804059"
 license: MIT
 repository-code: "https://github.com/Ecm83/millstone"
 abstract: >-

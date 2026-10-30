@@ -1,5 +1,8 @@
 ﻿# millstone
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23804059.svg)](https://doi.org/10.5281/zenodo.23804059)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 *English: [README_EN.md](README_EN.md) | Simple: [README_SIMPLE_EN.md](README_SIMPLE_EN.md)*
 
 Motor determinista de caracterización gramatical sobre corpus cerrados.

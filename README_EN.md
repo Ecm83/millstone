@@ -1,5 +1,8 @@
 # millstone
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23804059.svg)](https://doi.org/10.5281/zenodo.23804059)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Deterministic grammatical-characterization engine for closed corpora.
 
 Not an LLM, not a statistical analyzer. A **language-agnostic symbolic
