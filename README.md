@@ -88,6 +88,9 @@ Funcional end-to-end y calibrado sobre **11 corpus** (ver
 | **Letanía latina** | cola de eco n≤6 | refrán litúrgico |
 | **Sintético** | gramática recuperada exacta | oráculo ✓ |
 
+Datos: los corpus no van en el repo — `docs/data.md` lista fuentes y
+comandos de descarga. `pytest` corre sin datos (controles sintéticos).
+
 CLI: `python -m millstone <corpus> stats|discover|check|frontier|
 hypothesize|report|testbed|compare|battery|push`. Opciones globales:
 `--map FILE` (descifrado candidato antes de cualquier comando),

@@ -87,6 +87,9 @@ informal write-up):
 | **Latin litany** | echo tail to n=6 | liturgical refrain |
 | **Synthetic** | grammar recovered exactly | oracle ✓ |
 
+Data: corpora are not in the repo — `docs/data.md` lists sources and
+download commands. `pytest` runs without data (synthetic controls).
+
 CLI: `python -m millstone <corpus> stats|discover|check|frontier|
 hypothesize|report|testbed|compare|battery|push`. Global options:
 `--map FILE` (apply a decipherment candidate before any command),
