@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use millstone, please cite it as:"
+type: software
+authors:
+  - family-names: "Castelló March"
+    given-names: Enric
+title: "millstone: a deterministic symbolic engine for grammatical characterization of closed corpora"
+version: 0.1.0
+date-released: 2026-10-30
+license: MIT
+repository-code: "https://github.com/Ecm83/millstone"
+abstract: >-
+  A deterministic, language-agnostic engine that characterizes the
+  grammatical topology of closed or undeciphered corpora —
+  hierarchical corpus model, a regular constraint DSL with
+  decidable entailment, Pareto frontier discovery, MDL accounting,
+  pre-registered signature battery, null models, transcription
+  consensus, and a decipherment testbed — applied to the Voynich
+  Manuscript and 10+ other corpora.
+preferred-citation:
+  type: software
+  authors:
+    - family-names: "Castelló March"
+      given-names: Enric
+  title: "millstone"
+  url: "https://github.com/Ecm83/millstone"
