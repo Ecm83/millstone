@@ -16,6 +16,12 @@ Caso de estudio estrella: el **Manuscrito Voynich** — el corpus cerrado más
 famoso que nadie ha descifrado. Pero el motor no sabe nada del Voynich:
 funciona igual sobre latín, fonemas del inglés o una gramática sintética.
 
+## Citar
+
+Castelló March, E. (2026). *millstone: motor determinista de
+caracterización gramatical sobre corpus cerrados* (v0.1.1). Zenodo.
+https://doi.org/10.5281/zenodo.23804059
+
 ## La idea
 
 Un corpus cerrado sin ground truth no se puede "aprender"; se puede

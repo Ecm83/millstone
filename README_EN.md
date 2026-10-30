@@ -15,6 +15,12 @@ undeciphered closed corpus in the world. But the engine knows nothing
 about Voynich: it works identically on Latin, English phonemes, or a
 synthetic grammar.
 
+## How to cite
+
+Castelló March, E. (2026). *millstone: a deterministic symbolic engine
+for grammatical characterization of closed corpora* (v0.1.1). Zenodo.
+https://doi.org/10.5281/zenodo.23804059
+
 ## The idea
 
 A closed corpus with no ground truth cannot be "learned" — it can be
